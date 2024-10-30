@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { db } from "../firebaseConfig"; // Import Firestore instance
+import { db } from "../firebaseConfig"; 
 import { collection, addDoc } from "firebase/firestore";
 
 function Write() {
@@ -8,12 +8,12 @@ function Write() {
 
   const saveData = async () => {
     try {
-      const docRef = await addDoc(collection(db, "fruits"), { // Change "nature/fruits" to "fruits"
+      const docRef = await addDoc(collection(db, "fruits"), { 
         fruitName: inputValue1,
         fruitDefinition: inputValue2,
       });
       alert("Data saved successfully with ID: " + docRef.id);
-    } catch (error: any) { // Specify the type of error
+    } catch (error: any) { 
       alert("Error saving data: " + error.message);
     }
   };
@@ -24,13 +24,13 @@ function Write() {
         type='text'
         value={inputValue1}
         onChange={(e) => setInputValue1(e.target.value)}
-        placeholder="Fruit Name" // Optional placeholder for better UX
+        placeholder="Fruit Name" 
       />
       <input
         type='text'
         value={inputValue2}
         onChange={(e) => setInputValue2(e.target.value)}
-        placeholder="Fruit Definition" // Optional placeholder for better UX
+        placeholder="Fruit Definition" 
       />
       <button onClick={saveData}>SAVE DATA</button>
     </div>
