@@ -3,6 +3,9 @@ import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Write from "./components/Write";
+import Register from './components/register'; 
+import Login from './components/login'; 
+import Navbar from './components/Navbar'; 
 
 export default function Example() {
   return (
