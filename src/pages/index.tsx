@@ -1,13 +1,14 @@
 import React from 'react';
 import Navbar from '../components/Navbar';  
-import Example from '../components/Example'; 
-import Register from '../pages/register';  
+import Homepage from '../components/Homepage';
+import FAQ from '../components/FAQ';
 
 export default function HomePage() {
   return (
     <div>
       <Navbar />
-      <Example />
+      <Homepage />
+      <FAQ/>
     </div>
   );
 }
