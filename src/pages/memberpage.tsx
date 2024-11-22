@@ -33,10 +33,10 @@ const MemberPage = () => {
   return (
     <div>
       <h1>Member Dashboard</h1>
-      <p>Welcome, member! Here is your dashboard.</p>
+      <p>Welcome, Christine! Here is your dashboard.</p>
       {/* Add member-specific content here */}
     </div>
   );
-};
+}; 
 
 export default MemberPage;

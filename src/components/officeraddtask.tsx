@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { db } from "../firebaseConfig"; // Assuming you have firebaseConfig file
+import { collection, getDocs, addDoc } from "firebase/firestore";
 
 interface OfficerAddTaskProps {
-  close: () => void; //passing prop para indi mag hook error
+  close: () => void; // passing prop para indi mag hook error
 }
 
 const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
@@ -10,22 +12,42 @@ const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState("low");
   const [assignedOfficer, setAssignedOfficer] = useState("");
+  const [officers, setOfficers] = useState<string[]>([]); // state for officer names
 
-  //if real officers na siya need ta ni ichange to a function
-  //na would fetch officer names from the database the be presented as
-  //dropdown list dayon
-  const officers = [
-    "Officer 1",
-    "Officer 2",
-    "Officer 3",
-    "Officer 4"
-  ];
+  // Fetch officers from Firestore
+  useEffect(() => {
+    const fetchOfficers = async () => {
+      try {
+        const officersCollection = collection(db, "officers"); // Assuming your officers are stored in an 'officers' collection
+        const officersSnapshot = await getDocs(officersCollection);
+        const officerList = officersSnapshot.docs.map(doc => doc.data().name); // assuming each officer document has a 'name' field
+        setOfficers(officerList);
+      } catch (error) {
+        console.error("Error fetching officers: ", error);
+      }
+    };
 
-  const handleSubmit = (e: React.FormEvent) => {
+    fetchOfficers();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ taskName, description, dueDate, priority, assignedOfficer });
-    alert("Task added successfully!");
-    close(); //close form pagclick snag user submit
+
+    try {
+      // Add the task to Firestore
+      await addDoc(collection(db, "tasks"), {
+        taskName,
+        description,
+        dueDate: new Date(dueDate),
+        priority,
+        assignedOfficer,
+      });
+      console.log("Task added successfully!");
+      alert("Task added successfully!");
+      close(); // close form upon successful submission
+    } catch (error) {
+      console.error("Error adding task: ", error);
+    }
   };
 
   return (
@@ -88,11 +110,15 @@ const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
                 required
               >
                 <option value="" disabled>Select an officer</option>
-                {officers.map((officer, index) => (
-                  <option key={index} value={officer}>
-                    {officer}
-                  </option>
-                ))}
+                {officers.length > 0 ? (
+                  officers.map((officer, index) => (
+                    <option key={index} value={officer}>
+                      {officer}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>Loading officers...</option>
+                )}
               </select>
             </div>
 
@@ -102,7 +128,7 @@ const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
           </div>
         </form>
 
-        {/*Close Button*/}
+        {/* Close Button */}
         <button
           onClick={close}
           className="close-button"
