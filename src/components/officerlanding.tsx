@@ -84,7 +84,7 @@ const OfficerDashboard: React.FC = () => {
             <span className="material-icons"></span>
             <span>Dashboard</span>
           </a>
-          <a href="/acceptmember" className="nav-link">
+          <a href="/acceptmembers" className="nav-link ">
             <span className="material-icons"></span>
             <span>Members</span>
           </a>

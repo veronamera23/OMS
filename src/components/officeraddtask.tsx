@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../firebaseConfig"; // Assuming you have firebaseConfig file
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
+import { collection, getDocs, query, where, addDoc, doc, getDoc } from "firebase/firestore";
 
 interface OfficerAddTaskProps {
-  close: () => void; // passing prop para indi mag hook error
+  close: () => void; // Prop to handle form closure
 }
 
 const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
@@ -12,22 +12,34 @@ const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState("low");
   const [assignedOfficer, setAssignedOfficer] = useState("");
-  const [officers, setOfficers] = useState<string[]>([]); // state for officer names
+  const [approvedMembers, setApprovedMembers] = useState<Array<{ uid: string; fullName: string }>>([]);
 
-  // Fetch officers from Firestore
+  // Fetch approved members from Firestore
   useEffect(() => {
-    const fetchOfficers = async () => {
+    const fetchApprovedMembers = async () => {
       try {
-        const officersCollection = collection(db, "officers"); // Assuming your officers are stored in an 'officers' collection
-        const officersSnapshot = await getDocs(officersCollection);
-        const officerList = officersSnapshot.docs.map(doc => doc.data().name); // assuming each officer document has a 'name' field
-        setOfficers(officerList);
+        // Fetch members with status 'approved' from the 'Members' collection
+        const membersQuery = query(collection(db, "Members"), where("status", "==", "approved"));
+        const membersSnapshot = await getDocs(membersQuery);
+
+        // For each approved member, fetch their fullName from the 'Users' collection
+        const memberPromises = membersSnapshot.docs.map(async (memberDoc) => {
+          const memberData = memberDoc.data();
+          const userDoc = await getDoc(doc(db, "Users", memberData.uid));
+          const fullName = userDoc.exists() ? userDoc.data()?.fullName || "Unknown Member" : "Unknown Member";
+
+          return { uid: memberData.uid, fullName };
+        });
+
+        // Resolve all promises to get the list of approved members
+        const resolvedMembers = await Promise.all(memberPromises);
+        setApprovedMembers(resolvedMembers);
       } catch (error) {
-        console.error("Error fetching officers: ", error);
+        console.error("Error fetching approved members: ", error);
       }
     };
 
-    fetchOfficers();
+    fetchApprovedMembers();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -44,7 +56,7 @@ const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
       });
       console.log("Task added successfully!");
       alert("Task added successfully!");
-      close(); // close form upon successful submission
+      close(); // Close the form upon successful submission
     } catch (error) {
       console.error("Error adding task: ", error);
     }
@@ -109,15 +121,19 @@ const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
                 className="form-select"
                 required
               >
-                <option value="" disabled>Select an officer</option>
-                {officers.length > 0 ? (
-                  officers.map((officer, index) => (
-                    <option key={index} value={officer}>
-                      {officer}
+                <option value="" disabled>
+                  Select a member
+                </option>
+                {approvedMembers.length > 0 ? (
+                  approvedMembers.map((member) => (
+                    <option key={member.uid} value={member.uid}>
+                      {member.fullName}
                     </option>
                   ))
                 ) : (
-                  <option value="" disabled>Loading officers...</option>
+                  <option value="" disabled>
+                    No approved members found
+                  </option>
                 )}
               </select>
             </div>
@@ -129,10 +145,7 @@ const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
         </form>
 
         {/* Close Button */}
-        <button
-          onClick={close}
-          className="close-button"
-        >
+        <button onClick={close} className="close-button">
           Close
         </button>
       </div>

@@ -3,9 +3,11 @@ import { useRouter } from "next/router";
 import { auth } from "../firebaseConfig";
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import MemberDashboard from "../components/memberdashboard"; // Make sure the path is correct
 
 const MemberPage = () => {
   const [loading, setLoading] = useState(true);
+  const [isMember, setIsMember] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -16,9 +18,10 @@ const MemberPage = () => {
         const userData = userDoc.data();
 
         if (userData?.role !== "member") {
-          router.push("/"); // Redirect non-member users to home
+          router.push("/"); // Redirect non-organization users to home
         } else {
-          setLoading(false); // Allow access for members
+            setIsMember(true);
+          setLoading(false); // Allow access for organization users
         }
       } else {
         router.push("/login"); // Redirect unauthenticated users to login
@@ -30,13 +33,10 @@ const MemberPage = () => {
 
   if (loading) return <div>Loading...</div>;
 
-  return (
-    <div>
-      <h1>Member Dashboard</h1>
-      <p>Welcome, Christine! Here is your dashboard.</p>
-      {/* Add member-specific content here */}
-    </div>
-  );
-}; 
+  // Render Memberboard if the user is an member
+  return isMember ? <MemberDashboard /> : null;
+};
 
 export default MemberPage;
+
+
