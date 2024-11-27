@@ -3,7 +3,8 @@ import { useRouter } from "next/router";
 import { auth } from "../firebaseConfig";
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import MemberDashboard from "../components/memberdashboard"; // Make sure the path is correct
+import MemberDashboard from "../components/memberdashboard"; // Ensure the path is correct
+import { onAuthStateChanged } from "firebase/auth";
 
 const MemberPage = () => {
   const [loading, setLoading] = useState(true);
@@ -11,32 +12,34 @@ const MemberPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const checkUserRole = async () => {
-      const user = auth.currentUser;
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const userDoc = await getDoc(doc(db, "Users", user.uid));
-        const userData = userDoc.data();
+        try {
+          const userDoc = await getDoc(doc(db, "Users", user.uid));
+          const userData = userDoc.data();
 
-        if (userData?.role !== "member") {
-          router.push("/"); // Redirect non-organization users to home
-        } else {
-            setIsMember(true);
-          setLoading(false); // Allow access for organization users
+          if (userData?.role === "member") {
+            setIsMember(true); // User is authorized as a member
+          } else {
+            router.push("/"); // Redirect non-members to home
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          router.push("/"); // Redirect in case of error
         }
       } else {
         router.push("/login"); // Redirect unauthenticated users to login
       }
-    };
+      setLoading(false);
+    });
 
-    checkUserRole();
+    return () => unsubscribe(); // Cleanup listener on unmount
   }, [router]);
 
   if (loading) return <div>Loading...</div>;
 
-  // Render Memberboard if the user is an member
+  // Render MemberDashboard if the user is a member
   return isMember ? <MemberDashboard /> : null;
 };
 
 export default MemberPage;
-
-

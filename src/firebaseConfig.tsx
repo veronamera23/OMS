@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAuth, Auth } from "firebase/auth";
+import { getAuth, Auth, setPersistence, browserLocalPersistence } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -11,7 +11,7 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase only if it hasn't been initialized yet
@@ -22,8 +22,18 @@ if (getApps().length === 0) {
   app = getApp(); // Use the already initialized app
 }
 
+// Initialize Firebase Auth
+const auth: Auth = getAuth(app);
+
+// Set persistence to local
+setPersistence(auth, browserLocalPersistence)
+  .then(() => {
+    console.log("Firebase Auth persistence set to local.");
+  })
+  .catch((error) => {
+    console.error("Error setting auth persistence:", error);
+  });
+
 const db = getFirestore(app);
 
-// Initialize Firebase Auth and export it with the app instance
-export const auth: Auth = getAuth(app);
-export { app, db };
+export { app, auth, db };
