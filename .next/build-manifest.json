@@ -13,6 +13,11 @@
   "rootMainFiles": [],
   "rootMainFilesTree": {},
   "pages": {
+    "/": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/index.js"
+    ],
     "/_app": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
@@ -23,15 +28,20 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/memberpage": [
+    "/choose": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/memberpage.js"
+      "static/chunks/pages/choose.js"
     ],
-    "/orglist": [
+    "/login": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/orglist.js"
+      "static/chunks/pages/login.js"
+    ],
+    "/registerorg": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/registerorg.js"
     ]
   },
   "ampFirstPages": []
