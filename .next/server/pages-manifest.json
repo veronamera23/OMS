@@ -2,8 +2,9 @@
   "/_app": "pages/_app.js",
   "/_document": "pages/_document.js",
   "/_error": "pages/_error.js",
-  "/": "pages/index.js",
-  "/choose": "pages/choose.js",
-  "/registerorg": "pages/registerorg.js",
-  "/login": "pages/login.js"
+  "/login": "pages/login.js",
+  "/orgpage": "pages/orgpage.js",
+  "/memberpage": "pages/memberpage.js",
+  "/orglist": "pages/orglist.js",
+  "/acceptmembers": "pages/acceptmembers.js"
 }
