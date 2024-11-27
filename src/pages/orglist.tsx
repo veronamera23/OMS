@@ -84,12 +84,12 @@ const OrgList: React.FC = () => {
   return (
     <div className="orglist-container p-4">
       <h1 className="text-2xl font-semibold mb-4">Organization List</h1>
-      <button
+      {/* <button
         className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
         onClick={() => (window.location.href = "/memberdashboard")}
       >
         Back to Dashboard
-      </button>
+      </button> */}
       <ul className="mt-4 space-y-2">
         {organizations.length > 0 ? (
           organizations.map((org) => (
