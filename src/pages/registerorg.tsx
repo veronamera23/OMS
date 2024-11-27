@@ -140,7 +140,7 @@ function Register() {
             Already registered? <a href="/login" className="text-blue-400">Login</a>
           </p>
         </form>
-      </div>s
+      </div>
     </div>
   );
 }
