@@ -121,42 +121,6 @@ module.exports = require("next/dist/compiled/next-server/pages.runtime.dev.js");
 
 /***/ }),
 
-<<<<<<< HEAD
-=======
-/***/ "../../server/app-render/action-async-storage.external":
-/*!*******************************************************************************!*\
-  !*** external "next/dist/server/app-render/action-async-storage.external.js" ***!
-  \*******************************************************************************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("next/dist/server/app-render/action-async-storage.external.js");
-
-/***/ }),
-
-/***/ "../../server/app-render/work-async-storage.external":
-/*!*****************************************************************************!*\
-  !*** external "next/dist/server/app-render/work-async-storage.external.js" ***!
-  \*****************************************************************************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("next/dist/server/app-render/work-async-storage.external.js");
-
-/***/ }),
-
-/***/ "./work-unit-async-storage.external":
-/*!**********************************************************************************!*\
-  !*** external "next/dist/server/app-render/work-unit-async-storage.external.js" ***!
-  \**********************************************************************************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("next/dist/server/app-render/work-unit-async-storage.external.js");
-
-/***/ }),
-
->>>>>>> 53809f1 (update gitignore)
 /***/ "react":
 /*!************************!*\
   !*** external "react" ***!

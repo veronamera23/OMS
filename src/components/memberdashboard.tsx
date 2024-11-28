@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import MemberSidebar from "../pages/membersidebar";
 
 const MemberDashboard: React.FC = () => {
   const [firstName, setFirstName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      console.log("User logged out successfully.");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
 
   // Function to fetch user's first name from the 'members' collection
   const fetchUserData = async (userId: string) => {
@@ -88,7 +97,8 @@ const MemberDashboard: React.FC = () => {
           </p>
         </div>
         <div className="lg:col-start-3 mt-8 ml-6">
-          <button className="logout-button text-sm px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600 absolute right-[1.5rem] top-[2rem]">
+          <button className="logout-button text-sm px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600 absolute right-[1.5rem] top-[2rem]"
+          onClick={handleLogout} >
             Log Out
           </button>
           <p className="pt-10" style={{ fontSize: "16px", fontFamily: "Arial" }}>

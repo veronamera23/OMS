@@ -1,10 +1,12 @@
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, FacebookAuthProvider } from "firebase/auth";
 import React, { useState, FormEvent } from "react";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, FacebookAuthProvider } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Login() {
   const [email, setEmail] = useState<string>("");
@@ -41,7 +43,7 @@ function Login() {
       const result = await signInWithPopup(auth, provider);
       console.log("Google sign-in successful:", result);
       toast.success("Signed in with Google successfully", { position: "top-center" });
-      window.location.href = "/profile";
+      router.push("/profile");
     } catch (error: any) {
       console.log(error.message);
       toast.error(error.message, { position: "bottom-center" });
@@ -54,7 +56,7 @@ function Login() {
       const result = await signInWithPopup(auth, provider);
       console.log("Facebook sign-in successful:", result);
       toast.success("Signed in with Facebook successfully", { position: "top-center" });
-      window.location.href = "/profile";
+      router.push("/profile");
     } catch (error: any) {
       console.log(error.message);
       toast.error(error.message, { position: "bottom-center" });
@@ -62,63 +64,84 @@ function Login() {
   };
 
   return (
-    
-    <div className="login-container">
-      <div className="login-card">
-        <form onSubmit={handleSubmit}>
-          <h3 className="login-title">Login</h3>
-
-          <div className="mb-3">
-            <label className="label-text">Email address</label>
-            <input
-              type="email"
-              className="input-field"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="label-text">Password</label>
-            <input
-              type="password"
-              className="input-field"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-
-          <div className="d-grid">
-            <button type="submit" className="login-button">
-              Submit
+    <div className="bg-gradient-to-br from-indigo-300 to-fuchsia-700 min-h-screen flex items-center justify-center">
+      <ToastContainer />
+      <div className="flex w-[60%] max-w-7xl bg-white shadow-md rounded-lg overflow-hidden">
+        {/* Left Side (Logo and Welcome) */}
+        <div className="w-1/2 bg-gradient-to-br from-gray-200 to-purple-500 text-white p-8 flex flex-col justify-center items-center">
+          <img src="/assets/OMSLOGO.png" alt="OMS Logo" className="h-32 mb-4" />
+          <h1 className="text-3xl font-bold mb-4 text-center">Welcome to OMS</h1>
+          <p className="text-lg text-center mb-8">Sign in to continue access.</p>
+          <div className="flex flex-col items-center">
+            <button
+              onClick={handleGoogleSignUp}
+              className="w-[105%] bg-red-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-4 flex items-center justify-center"
+            >
+              <i className="fab fa-google mr-2"></i> Sign in with Google
+            </button>
+            <button
+              onClick={handleFacebookSignUp}
+              className="w-[105%] bg-blue-800 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center"
+            >
+              <i className="fab fa-facebook-f mr-2"></i> Sign in with Facebook
             </button>
           </div>
-          <p className="forgot-password text-center">
-            New user? <a href="/choose">Register Here</a>
+          <p className="text-center mt-8 text-sm">www.organizationmanagementsystem.com</p>
+        </div>
+        {/* Right Side (Form) */}
+        <div className="w-1/2 p-8">
+          <h3 className="text-2xl font-bold text-center mb-6">SIGN IN</h3>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label
+                htmlFor="email"
+                className="block text-gray-700 font-medium mb-2"
+              >
+                Email address
+              </label>
+              <input
+                id="email"
+                type="email"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="password"
+                className="block text-gray-700 font-medium mb-2"
+              >
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="d-grid">
+              <button
+                type="submit"
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+          <p className="text-center mt-4">
+            New user?{" "}
+            <a href="/choose" className="text-purple-600 font-bold">
+              Register Here
+            </a>
           </p>
-          
           <br />
-
           <hr />
-
-          <p className="social-login">
-            or Sign In With
-          </p>
-
-          {/* Enhanced Social Login options with logos and labels */}
-          <div className="social-login-options text-center mt-4">
-            <button onClick={handleGoogleSignUp} className="social-login-button google">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google Logo" className="social-logo" />
-              <span>Google</span>
-            </button>
-            <button onClick={handleFacebookSignUp} className="social-login-button facebook">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook Logo" className="social-logo" />
-              <span>Facebook</span>
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );

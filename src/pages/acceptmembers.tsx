@@ -4,6 +4,7 @@ import { collection, getDocs, query, where, doc, getDoc, updateDoc } from "fireb
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebaseConfig";
 import FinalMembers from "../components/finalmembers";
+import OfficerSidebar from "../components/officersidebar"; 
 
 const AcceptMembers: React.FC = () => {
   const [members, setMembers] = useState<
@@ -99,54 +100,61 @@ const AcceptMembers: React.FC = () => {
   }
 
   return (
-    <div className="accept-members-container p-4">
-      <h1 className="text-2xl font-semibold mb-4">Pending Member Requests</h1>
-      {members.length > 0 ? (
-        <ul className="mt-4 space-y-2">
-          {members.map((member) => (
-            <li key={member.id} className="p-2 bg-gray-100 rounded flex justify-between items-center">
-              <div>
-                <p>
-                  <strong>Name:</strong> {member.fullName || "N/A"}
-                </p>
-                <p className="text-sm text-gray-600">
-                  <strong>Joined At:</strong> {member.joinedAt}
-                </p>
-              </div>
-              <div className="flex space-x-2">
-                <button
-                  className="text-white bg-green-500 px-4 py-2 rounded hover:bg-green-600"
-                  onClick={() => handleApproval(member.id, "approved")}
-                >
-                  Approve
-                </button>
-                <button
-                  className="text-white bg-red-500 px-4 py-2 rounded hover:bg-red-600"
-                  onClick={() => handleApproval(member.id, "rejected")}
-                >
-                  Reject
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No pending member requests.</p>
-      )}
-            {/* Button to toggle approved members */}
-            <div className="mt-6">
-        <button
-          className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
-          onClick={() => setShowApprovedMembers((prev) => !prev)}
-        >
-          {showApprovedMembers ? "Hide Approved Members" : "Show Approved Members"}
-        </button>
-      </div>
+    <div className="flex">
+      {/* Sidebar */}
+      <OfficerSidebar />
 
-      {/* Render FinalMembers component */}
-      {showApprovedMembers && <FinalMembers />}
+      {/* Main Content */}
+      <div className="flex flex-col bg-[#F3E8FF] min-h-screen w-full">
+        {/* Header */}
+        <header className="bg-purple-600 p-4 text-white">
+          <h1 className="text-3xl font-bold">Manage Member Requests</h1>
+        </header>
+
+        <main className="p-6 flex flex-col gap-6">
+          {/* Pending Members Section */}
+          <section className="bg-white shadow rounded p-6">
+            <h2 className="text-2xl font-semibold text-purple-700">Pending Members</h2>
+            {members.length > 0 ? (
+              <ul className="mt-4 space-y-4">
+                {members.map((member) => (
+                  <li
+                    key={member.id}
+                    className="p-4 bg-purple-100 shadow rounded flex justify-between items-center"
+                  >
+                    <div>
+                      <p className="text-black">
+                        <strong>Name:</strong> {member.fullName || "N/A"}
+                      </p>
+                      <p className="text-black">
+                        <strong>Joined At:</strong> {member.joinedAt}
+                      </p>
+                    </div>
+                    <div className="flex space-x-4">
+                      <button
+                        className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+                        onClick={() => handleApproval(member.id, "approved")}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        className="bg-purple-300 text-white px-4 py-2 rounded hover:bg-purple-400"
+                        onClick={() => handleApproval(member.id, "rejected")}
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-black mt-4">No pending member requests.</p>
+            )}
+          </section>
+          
+        </main>
+      </div>
     </div>
-    
   );
 };
 
