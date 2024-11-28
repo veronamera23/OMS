@@ -4,12 +4,14 @@ import { auth } from "../firebaseConfig";
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import MemberDashboard from "../components/memberdashboard"; // Ensure the path is correct
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged} from "firebase/auth";
 
 const MemberPage = () => {
   const [loading, setLoading] = useState(true);
   const [isMember, setIsMember] = useState(false);
   const router = useRouter();
+
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
