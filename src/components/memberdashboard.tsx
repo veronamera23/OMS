@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { auth, db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import MemberSidebar from "../pages/membersidebar";
 
 const MemberDashboard: React.FC = () => {
   const [firstName, setFirstName] = useState<string | null>(null);
@@ -53,29 +54,76 @@ const MemberDashboard: React.FC = () => {
   };
 
   return (
-    <div className="dashboard-container">
-      {/* Main content */}
-      <main className="main-content">
-        {/* Header with "Welcome" at the top-left */}
-        <header className="header flex justify-start items-center">
-          <h1 className="header-title"> Member Dashboard</h1>
+      <div
+        className="grid lg:grid-cols-3"
+        style={{ gridTemplateColumns: "20% 40% 40%" }}
+      >
+        <div className="flex lg:col-start-1">
+          <MemberSidebar />
+        </div>
+        <div className="lg:col-start-2 mt-8">
           <div className="welcome-message ml-auto">
             Welcome back, {firstName || "User"}! {/* Display first name */}
           </div>
-        </header>
-        <button
-          className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
-          onClick={handleOrgListRedirect}
-        >
-          Organization List
-        </button>
-
-        {/* Other sections of the dashboard */}
-        <div className="dashboard-content">
-          {/* Add other content here */}
+          <p style={{ fontSize: "16px", fontFamily: "Arial" }}>
+            {" "}
+            How are we doing today?
+          </p>
+          <hr className="my-4 border-black" />
+          <div className="text-black calendar h-64 w-full bg-gray-200 self-end">
+            Calendar
+          </div>
+          <div className="mx-32 text-black memberstats h-20 w-full max-w-xs bg-gray-300 p-4">
+            Current Date and Time
+          </div>
+          <div className="mx-14 text-black pending-tasks bg-orange-400 h-32 w-4/5  p-4">
+            Pending Tasks
+          </div>
+          <p
+            className="mx-16 my-2 text-right hover:text-purple-700"
+            style={{ fontSize: "16px", fontFamily: "Arial" }}
+          >
+            {" "}
+            View More
+          </p>
         </div>
-      </main>
-    </div>
+        <div className="lg:col-start-3 mt-8 ml-6">
+          <button className="logout-button text-sm px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600 absolute right-[1.5rem] top-[2rem]">
+            Log Out
+          </button>
+          <p className="pt-10" style={{ fontSize: "16px", fontFamily: "Arial" }}>
+            {" "}
+            What else would you like to do?
+          </p>
+          <div className="flex py-4 gap-4 w-min">
+            <button 
+              className="officer-action-buttons flex-grow"
+              onClick={handleOrgListRedirect}>
+              View Orgs
+            </button>
+            <button className="officer-action-buttons flex-grow">
+              View Events
+            </button>
+          </div>
+          <p
+            className="pt-2 pb-2"
+            style={{ fontSize: "16px", fontFamily: "Arial" }}
+          >
+            {" "}
+            Check out what's happening...
+          </p>
+          <div className="mx-4 text-black calendar h-80 max-w-lg bg-gray-200 self-end">
+            Upcoming Events
+          </div>
+          <p
+            className="mx-16 my-2 text-right hover:text-purple-700"
+            style={{ fontSize: "16px", fontFamily: "Arial" }}
+          >
+            {" "}
+            View More
+          </p>
+        </div>
+      </div>
   );
 };
 
