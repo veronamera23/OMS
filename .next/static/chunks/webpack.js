@@ -129,7 +129,11 @@
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
+<<<<<<< HEAD
 /******/ 		__webpack_require__.h = () => ("21dd36560da42af6")
+=======
+/******/ 		__webpack_require__.h = () => ("c07c13b325fce83c")
+>>>>>>> 53809f1 (update gitignore)
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
