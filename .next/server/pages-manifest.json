@@ -3,6 +3,6 @@
   "/_document": "pages/_document.js",
   "/_app": "pages/_app.js",
   "/login": "pages/login.js",
-  "/registerorg": "pages/registerorg.js",
-  "/orglist": "pages/orglist.js"
+  "/orgpage": "pages/orgpage.js",
+  "/": "pages/index.js"
 }
