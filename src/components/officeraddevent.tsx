@@ -28,27 +28,47 @@ const OfficerAddEvent: React.FC<OfficerAddEventProps> = ({ close }) => {
 
   const uploadImages = async (): Promise<string[]> => {
     const uploadedURLs: string[] = [];
+    
+    // Check if there are any images to upload
+    if (eventImages.length === 0) {
+      return uploadedURLs;
+    }
+  
     for (const file of eventImages) {
       try {
-        const storageRef = ref(storage, `events/${encodeURIComponent(file.name)}`);
-        await uploadBytes(storageRef, file); // Upload each file to Firebase Storage
-        const downloadURL = await getDownloadURL(storageRef); // Get the download URL
-        uploadedURLs.push(downloadURL); // Store the URL in the array
+        // Create a unique filename using timestamp
+        const timestamp = Date.now();
+        const uniqueFileName = `${timestamp}_${file.name}`;
+        const storageRef = ref(storage, `events/${uniqueFileName}`);
+        
+        // Upload file with metadata
+        const metadata = {
+          contentType: file.type,
+        };
+        await uploadBytes(storageRef, file, metadata);
+        
+        // Get download URL and wait for it to be generated
+        const downloadURL = await getDownloadURL(storageRef);
+        uploadedURLs.push(downloadURL);
       } catch (error) {
         console.error("Error uploading file:", file.name, error);
-        throw error; // Ensure we throw the error so we can handle it in the submit function
+        throw error;
       }
     }
     return uploadedURLs;
   };
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     try {
+      // Show loading state
+      setStatus("Uploading..."); // You'll need to add this state
+      
       const imageUrls = await uploadImages();
-
-      await addDoc(collection(db, "events"), {
+      
+      // Create event document
+      const eventData = {
         eventName,
         eventDate: new Date(eventDate),
         eventDescription,
@@ -57,9 +77,12 @@ const OfficerAddEvent: React.FC<OfficerAddEventProps> = ({ close }) => {
         tags: tags.split(",").map((tag) => tag.trim()),
         status,
         eventLocation,
-        eventImages: imageUrls, 
-      });
-
+        eventImages: imageUrls,
+        createdAt: new Date(), // Add timestamp
+      };
+  
+      await addDoc(collection(db, "events"), eventData);
+      
       alert("Event added successfully!");
       close();
     } catch (error) {
