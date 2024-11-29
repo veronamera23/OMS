@@ -3,40 +3,45 @@ import { useRouter } from "next/router";
 import { auth } from "../firebaseConfig";
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import MemberDashboard from "../components/memberdashboard"; // Ensure the path is correct
+import { onAuthStateChanged} from "firebase/auth";
 
 const MemberPage = () => {
   const [loading, setLoading] = useState(true);
+  const [isMember, setIsMember] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    const checkUserRole = async () => {
-      const user = auth.currentUser;
-      if (user) {
-        const userDoc = await getDoc(doc(db, "Users", user.uid));
-        const userData = userDoc.data();
 
-        if (userData?.role !== "member") {
-          router.push("/"); // Redirect non-member users to home
-        } else {
-          setLoading(false); // Allow access for members
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(db, "Users", user.uid));
+          const userData = userDoc.data();
+
+          if (userData?.role === "member") {
+            setIsMember(true); // User is authorized as a member
+          } else {
+            router.push("/"); // Redirect non-members to home
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          router.push("/"); // Redirect in case of error
         }
       } else {
         router.push("/login"); // Redirect unauthenticated users to login
       }
-    };
+      setLoading(false);
+    });
 
-    checkUserRole();
+    return () => unsubscribe(); // Cleanup listener on unmount
   }, [router]);
 
   if (loading) return <div>Loading...</div>;
 
-  return (
-    <div>
-      <h1>Member Dashboard</h1>
-      <p>Welcome, Christine! Here is your dashboard.</p>
-      {/* Add member-specific content here */}
-    </div>
-  );
-}; 
+  // Render MemberDashboard if the user is a member
+  return isMember ? <MemberDashboard /> : null;
+};
 
 export default MemberPage;
