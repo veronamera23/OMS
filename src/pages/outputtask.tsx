@@ -57,7 +57,7 @@ const AboutUs = () => {
             </button>
 
             {/* Modal Title */}
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Contact Us</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Set Task</h3>
 
             {/* Form */}
             <form className="space-y-4">
