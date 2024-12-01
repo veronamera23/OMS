@@ -65,3 +65,7 @@ yarn-error.log*
 next-env.d.ts
 .next
 .DS_Store
+*.log 
+# Temporary files 
+*.gz 
+*.gz.old
