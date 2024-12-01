@@ -181,8 +181,11 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
       <p className="text-gray-400 mt-2">
         <EventIcon />
         &nbsp;
-        {event.eventDate}
-      </p>
+        {event.eventDate instanceof Date
+            ? event.eventDate.toLocaleDateString() // Format the date as a string
+            : event.eventDate}
+        </p>
+
       <div className="flex items-center mt-4">
         <div
           className={`mr-2 flex items-center cursor-pointer ${

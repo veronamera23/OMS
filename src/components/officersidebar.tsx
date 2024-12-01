@@ -34,7 +34,7 @@ const OfficerSidebar: React.FC = () => {
         </a>
 
         <a
-          href="#"
+          href="/events"
           className="flex items-center px-6 py-3 text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition-colors"
         >
           <EventIcon />

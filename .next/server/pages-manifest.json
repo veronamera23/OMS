@@ -1,1 +1,11 @@
-{}
+{
+  "/_app": "pages/_app.js",
+  "/_document": "pages/_document.js",
+  "/_error": "pages/_error.js",
+  "/login": "pages/login.js",
+  "/registerorg": "pages/registerorg.js",
+  "/choose": "pages/choose.js",
+  "/registermember": "pages/registermember.js",
+  "/events": "pages/events.js",
+  "/orgpage": "pages/orgpage.js"
+}
