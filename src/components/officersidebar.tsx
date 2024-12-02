@@ -52,7 +52,7 @@ const OfficerSidebar: React.FC = () => {
         <hr className="my-4 border-gray-300" />
 
         <a
-          href="#"
+          href="/aboutuspage"
           className="flex items-center px-6 py-3 text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition-colors"
         >
           <InfoIcon />

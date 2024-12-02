@@ -1,9 +1,8 @@
 {
-  "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/login": "pages/login.js",
-  "/orgpage": "pages/orgpage.js",
-  "/events": "pages/events.js",
-  "/": "pages/index.js"
+  "/_app": "pages/_app.js",
+  "/aboutuspage": "pages/aboutuspage.js",
+  "/memberspageofficerview": "pages/memberspageofficerview.js",
+  "/events": "pages/events.js"
 }
