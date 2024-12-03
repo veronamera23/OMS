@@ -15,7 +15,7 @@ interface Event {
   eventDate: string | Date;
   eventName: string;
   eventDescription: string;
-  eventImages: string;
+  eventImages: string[];
   eventLocation: string;
   eventPrice: string;
   eventType: string;
@@ -166,8 +166,8 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   return (
     <div className="bg-white shadow-md rounded-lg p-4 mb-4">
       <img
-        src={event.eventImages}
-        alt={event.eventName}
+        src={event.eventImages[0]}
+        alt={event.eventImages[0]}
         className="w-full h-48 object-cover rounded-md"
       />
       <h2 className="text-xl font-semibold mt-4">{event.eventName}</h2>
@@ -242,6 +242,7 @@ const EventsView: React.FC = () => {
                 : data.eventDate,
           };
         });
+        console.log("Events: ", eventsList);
         setEvents(eventsList);
       } catch (err) {
         console.error("Error fetching events:", err);

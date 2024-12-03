@@ -3,6 +3,7 @@ import { db, storage } from "../firebaseConfig"; // Make sure you have firebaseC
 import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import CloseIcon from "@mui/icons-material/Close";
+import s3 from "./awsConfig";
 
 interface OfficerAddEventProps {
   close: () => void;
@@ -42,13 +43,26 @@ const OfficerAddEvent: React.FC<OfficerAddEventProps> = ({ close }) => {
     const uploadedURLs: string[] = [];
     for (const file of eventImages) {
       try {
-        const storageRef = ref(storage, `events/${encodeURIComponent(file.name)}`);
-        await uploadBytes(storageRef, file);
-        const downloadURL = await getDownloadURL(storageRef);
+        const bucketName = process.env.NEXT_PUBLIC_S3_BUCKET_NAME ?? "";
+        if (!bucketName) {
+            throw new Error("S3_BUCKET_NAME is not defined");
+        }
+
+        const params = {
+          Bucket: bucketName,
+          Key: `events/${encodeURIComponent(file.name)}`,
+          Body: file,
+          ContentType: file.type,
+        };
+
+        await s3.upload(params).promise();
+
+        const downloadURL = `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
         uploadedURLs.push(downloadURL);
+        console.log("Uploaded file: ", downloadURL);
       } catch (error) {
         console.error("Error uploading file:", file.name, error);
-        throw error; // Re-throw the error to be caught in handleSubmit
+        throw error; 
       }
     }
     return uploadedURLs;
@@ -69,7 +83,7 @@ const OfficerAddEvent: React.FC<OfficerAddEventProps> = ({ close }) => {
         tags: tags.split(",").map((tag) => tag.trim()),
         status,
         eventLocation,
-        eventImages: imageUrls, // Store the image URLs in Firestore
+        eventImages: imageUrls,
       });
 
       alert("Event added successfully!");
