@@ -165,11 +165,17 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4 mb-4">
-      <img
-        src={event.eventImages[0]}
-        alt={event.eventImages[0]}
-        className="w-full h-48 object-cover rounded-md"
-      />
+      {event.eventImages.length > 0 ? (
+              <img
+                src={event.eventImages[0]}
+                alt={event.eventImages[0]}
+                className="w-full h-48 object-cover rounded-md"
+              />
+            ) : (
+              <div className="w-full h-48 bg-gray-300 flex items-center justify-center rounded-md">
+                <p className="text-gray-500">No Image Available</p>
+              </div>
+      )}
       <h2 className="text-xl font-semibold mt-4">{event.eventName}</h2>
       <p className="text-gray-600 mt-2">
         {truncateText(event.eventDescription)}
