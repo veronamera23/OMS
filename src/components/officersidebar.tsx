@@ -38,7 +38,7 @@ const OfficerSidebar: React.FC = () => {
           className="flex items-center px-6 py-3 text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition-colors"
         >
           <EventIcon />
-          <span className="ml-3 text-md font-medium">Events</span>
+          <span className="ml-3 text-md font-medium">All Events</span>
         </a>
 
         <a

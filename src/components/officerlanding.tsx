@@ -6,6 +6,7 @@ import { auth, db } from "../firebaseConfig";
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import OfficerTasks from "./OfficerTasks";
+import Link from 'next/link';
 
 const OfficerDashboard: React.FC = () => {
   const [isAddTaskOpen, setAddTaskOpen] = useState(false);
@@ -124,8 +125,13 @@ const OfficerDashboard: React.FC = () => {
           <button className="officer-action-buttons flex-grow" onClick={handleAddEventClick}>
             Add Event
           </button>
+          <Link href="/#">
           <button className="officer-action-buttons flex-grow">View Officers</button>
-          <button className="officer-action-buttons flex-grow">View Events</button>
+          </Link>
+          <Link href="/userevents">
+             <button className="officer-action-buttons flex-grow">View My Events</button>
+          </Link>
+         
         </div>
 
         {/* Add Task Form */}

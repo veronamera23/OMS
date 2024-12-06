@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { db, storage } from "../firebaseConfig"; // Make sure you have firebaseConfig.js set up
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import CloseIcon from "@mui/icons-material/Close";
 import s3 from "./awsConfig";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../firebaseConfig";
 
 interface OfficerAddEventProps {
   close: () => void;
@@ -21,6 +23,7 @@ const OfficerAddEvent: React.FC<OfficerAddEventProps> = ({ close }) => {
   const [tags, setTags] = useState("");
   const [status, setStatus] = useState("Upcoming");
   const [eventLocation, setEventLocation] = useState("");
+  const [user] = useAuthState(auth);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -70,10 +73,33 @@ const OfficerAddEvent: React.FC<OfficerAddEventProps> = ({ close }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
+    if (!user) {
+      alert("You must be logged in to perform this action.");
+      return;
+    }
+  
     try {
+      const usersRef = collection(db, "Users");
+      const userQuery = query(usersRef, where("email", "==", user.email));
+      const userDocs = await getDocs(userQuery);
+  
+      if (userDocs.empty) {
+        alert("You are not authorized to add events.");
+        return;
+      }
+  
+      const userData = userDocs.docs[0]?.data();
+      if (userData.role !== "organization") {
+        alert("Only organizations can add events.");
+        return;
+      }
+  
+      const organizationId = userData.organizationId;
+  
+      // Upload images and create event
       const imageUrls = await uploadImages();
-
+  
       await addDoc(collection(db, "events"), {
         eventName,
         eventDate: new Date(eventDate),
@@ -84,15 +110,19 @@ const OfficerAddEvent: React.FC<OfficerAddEventProps> = ({ close }) => {
         status,
         eventLocation,
         eventImages: imageUrls,
+        organizationId, 
+        likes: 0,
+        dislikes: 0,
+        interested: 0,
       });
-
+  
       alert("Event added successfully!");
       close();
     } catch (error) {
-      console.error("Error adding event: ", error);
-      alert("Error adding event. Please try again.");
+      console.error("Error adding event:", error);
+      alert("An error occurred while adding the event. Please try again.");
     }
-  };
+  };  
 
   return (
     <div

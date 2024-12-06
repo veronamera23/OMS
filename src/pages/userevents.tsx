@@ -1,0 +1,289 @@
+import React, { useEffect, useState } from "react";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  Timestamp,
+  doc,
+  getDoc,
+} from "firebase/firestore";
+import { db } from "../firebaseConfig";
+import { getAuth } from "firebase/auth";
+import OfficerSidebar from "../components/officersidebar";
+import EventIcon from "@mui/icons-material/Event";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import StarIcon from "@mui/icons-material/Star";
+import PeopleIcon from "@mui/icons-material/People";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../firebaseConfig";
+import SearchIcon from "@mui/icons-material/Search";
+
+interface Event {
+  uid: string;
+  eventDate: string | Date;
+  eventName: string;
+  eventDescription: string;
+  eventImages: string[];
+  eventLocation: string;
+  eventPrice: string;
+  eventType: string;
+  isFree: string;
+  isOpenForAll: boolean;
+  status: string;
+  organizationId: string;
+  registrations: number;
+  interests: number;
+  engagements: number;
+  organizationName?: string; // Add organization name
+}
+
+const Header: React.FC = () => (
+  <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-gray-200">
+    <div>
+      <h1 className="text-3xl font-semibold text-gray-800">Your events</h1>
+      <p className="text-lg text-gray-500">Manage and view event details</p>
+    </div>
+    <div className="flex items-center space-x-4 mt-4 md:mt-0">
+      <button
+        className="text-sm bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition duration-200"
+        // You can replace handleRedirect with an actual handler
+        onClick={() => {}}
+      >
+        Create Event
+      </button>
+    </div>
+  </div>
+);
+
+const SearchAndFilter: React.FC = () => {
+    const [activeFilters, setActiveFilters] = useState({
+      type: "All",
+      likes: "none",
+      participation: "none",
+      date: "none",
+    });
+  
+    const handleFilterChange = (
+      filterType: keyof typeof activeFilters,
+      value: string
+    ) => {
+      setActiveFilters((prevFilters) => ({
+        ...prevFilters,
+        [filterType]: value,
+      }));
+    };
+  
+    const handleSortChange = (filterType: keyof typeof activeFilters) => {
+      setActiveFilters((prevFilters) => {
+        const newValue =
+          prevFilters[filterType] === "none"
+            ? "least"
+            : prevFilters[filterType] === "least"
+            ? "most"
+            : "none";
+        return {
+          ...prevFilters,
+          [filterType]: newValue,
+        };
+      });
+    };
+  
+    const getIndicator = (filterValue: string) => {
+      if (filterValue === "least") return "↓";
+      if (filterValue === "most") return "↑";
+      return "-";
+    };
+  
+    return (
+      <div className="relative flex items-center bg-white p-4 rounded-md mt-6 shadow-lg border border-gray-300 justify-center">
+        <div className="relative flex-grow">
+          <input
+            type="text"
+            className="w-full pl-10 pr-4 py-2 text-gray-600 placeholder-gray-400 bg-white rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            placeholder="Search..."
+          />
+          <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+            <SearchIcon className="h-5 w-5" />
+          </span>
+        </div>
+        <div className="ml-4 flex items-center space-x-4">
+          <span className="text-gray-600 text-sm">Filter by:</span>
+          <select
+            className="px-4 py-2 border rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100"
+            value={activeFilters.type}
+            onChange={(e) => handleFilterChange("type", e.target.value)}
+          >
+            {[
+              "All",
+              "Academic",
+              "Cultural",
+              "Sports",
+              "Socials",
+              "Competition",
+              "Interests",
+              "Volunteering",
+              "Career",
+              "Assemblies",
+            ].map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+          <button
+            className="px-4 py-2 border rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100"
+            onClick={() => handleSortChange("likes")}
+          >
+            Likes {getIndicator(activeFilters.likes)}
+          </button>
+          <button
+            className="px-4 py-2 border rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100"
+            onClick={() => handleSortChange("participation")}
+          >
+            Participation {getIndicator(activeFilters.participation)}
+          </button>
+          <button
+            className="px-4 py-2 border rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100"
+            onClick={() => handleSortChange("date")}
+          >
+            Date {getIndicator(activeFilters.date)}
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+const MyEventsView: React.FC = () => {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [user, loadingUser] = useAuthState(auth);
+
+  useEffect(() => {
+    const fetchMyEvents = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        if (!user) {
+          setError("You must be logged in to view your events.");
+          setLoading(false);
+          return;
+        }
+
+        // Fetch user's organization ID
+        const userDocRef = doc(db, "Users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()) {
+          setError("User not found.");
+          setLoading(false);
+          return;
+        }
+
+        const userData = userDoc.data();
+        const organizationId = userData?.organizationId;
+
+        if (!organizationId) {
+          setError("Organization ID not found for the user.");
+          setLoading(false);
+          return;
+        }
+
+        // Fetch organization name
+        const orgDocRef = doc(db, "Organizations", organizationId);
+        const orgDoc = await getDoc(orgDocRef);
+        const organizationName = orgDoc.exists()
+          ? orgDoc.data()?.name || "Unnamed Organization"
+          : "Unknown Organization";
+
+        // Query events based on organization ID
+        const eventsRef = collection(db, "events");
+        const q = query(eventsRef, where("organizationId", "==", organizationId));
+        const querySnapshot = await getDocs(q);
+
+        const eventsList = querySnapshot.docs.map((doc) => {
+          const data = doc.data() as Event;
+          return {
+            ...data,
+            uid: doc.id,
+            eventDate:
+              data.eventDate instanceof Timestamp
+                ? data.eventDate.toDate().toLocaleDateString()
+                : data.eventDate,
+            organizationName, // Include organization name in event data
+          };
+        });
+
+        setEvents(eventsList);
+      } catch (err) {
+        console.error("Error fetching user events:", err);
+        setError("Failed to load your events.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMyEvents();
+  }, [user]);
+
+  return (
+    <div className="flex">
+      <OfficerSidebar />
+      <div className="flex-grow p-6 bg-white">
+        <Header />
+        <SearchAndFilter />
+        <div className="mt-6">
+          {loading ? (
+            <div className="text-center text-gray-500 py-4">Loading events...</div>
+          ) : error ? (
+            <div className="text-center text-red-500 py-4">{error}</div>
+          ) : (
+            <table className="table-auto w-full rounded-lg overflow-hidden shadow-lg border border-gray-300 text-left">
+              <thead className="bg-purple-600 text-white">
+                <tr>
+                  <th className="px-4 py-2">
+                    <EventIcon sx={{ color: "white" }} /> Event Name
+                  </th>
+                  <th className="px-4 py-2">
+                    <CalendarTodayIcon sx={{ color: "white" }} /> Date
+                  </th>
+                  <th className="px-4 py-2">
+                    <StarIcon sx={{ color: "white" }} /> Interests
+                  </th>
+                  <th className="px-4 py-2">
+                    <PeopleIcon sx={{ color: "white" }} /> Status
+                  </th>
+                  <th className="px-4 py-2">
+                    <PeopleIcon sx={{ color: "white" }} /> Engagements
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {events.length > 0 ? (
+                  events.map((event, index) => (
+                    <tr key={index} className="even:bg-gray-50">
+                      <td className="px-4 py-2">{event.eventName}</td>
+                      <td className="px-4 py-2">{event.eventDate.toLocaleString()}</td>
+                      <td className="px-4 py-2">{event.interests}</td>
+                      <td className="px-4 py-2">{event.status}</td>
+                      <td className="px-4 py-2">{event.engagements}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="text-center text-gray-500 py-4">
+                      No events found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MyEventsView;

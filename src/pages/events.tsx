@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, Timestamp } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import SearchIcon from "@mui/icons-material/Search";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
@@ -138,10 +138,34 @@ const SearchAndFilter: React.FC = () => {
 };
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
+  const [orgName, setOrgName] = useState<string>("Loading...");
   const [interested, setInterested] = useState(false);
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
+  
+  useEffect(() => {
+    const fetchOrganizationName = async () => {
+      if (event.organizationId) {
+        try {
+          const orgDoc = await getDoc(doc(db, "Organizations", event.organizationId));
+          if (orgDoc.exists()) {
+            const data = orgDoc.data();
+            setOrgName(data.name || "Unknown Organization");
+          } else {
+            setOrgName("Organization Not Found");
+          }
+        } catch (err) {
+          console.error("Error fetching organization name:", err);
+          setOrgName("Error fetching organization");
+        }
+      } else {
+        setOrgName("No Organization ID");
+      }
+    };
 
+    fetchOrganizationName();
+  }, [event.organizationId]);
+  
   const handleInterestedClick = () => {
     setInterested(!interested);
   };
@@ -165,7 +189,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4 mb-4">
-      {event.eventImages.length > 0 ? (
+      {event.eventImages && event.eventImages.length > 0 ? (
               <img
                 src={event.eventImages[0]}
                 alt={event.eventImages[0]}
@@ -182,7 +206,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
       </p>
       <p className="text-gray-500 mt-2">
         <CorporateFareIcon />
-        &nbsp; org name placeholder{event.organizationId}
+        &nbsp; {orgName}
       </p>
       <p className="text-gray-400 mt-2">
         <EventIcon />
