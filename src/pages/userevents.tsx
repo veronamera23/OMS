@@ -204,17 +204,24 @@ const MyEventsView: React.FC = () => {
 
         const eventsList = querySnapshot.docs.map((doc) => {
           const data = doc.data() as Event;
+          const eventDate =
+            data.eventDate instanceof Timestamp
+              ? data.eventDate.toDate()
+              : new Date(data.eventDate);
+  
+          // Check if event date is in the past and update status to 'Done'
+          const currentDate = new Date();
+          const status = eventDate < currentDate ? "Completed" : data.status;
+  
           return {
             ...data,
             uid: doc.id,
-            eventDate:
-              data.eventDate instanceof Timestamp
-                ? data.eventDate.toDate().toLocaleDateString()
-                : data.eventDate,
+            eventDate: eventDate.toLocaleDateString(),
             organizationName, // Include organization name in event data
+            status, // Update the status if event date is in the past
           };
         });
-
+  
         setEvents(eventsList);
       } catch (err) {
         console.error("Error fetching user events:", err);

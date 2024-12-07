@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebaseConfig";
 import { collection, getDocs, query, where, addDoc, doc, getDoc } from "firebase/firestore";
-import CloseIcon from "@mui/icons-material/Close"; 
+import CloseIcon from "@mui/icons-material/Close";
+import { getAuth } from "firebase/auth";
 
 interface OfficerAddTaskProps {
   close: () => void; // Prop to handle form closure
@@ -14,6 +15,7 @@ const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
   const [priority, setPriority] = useState("low");
   const [assignedOfficer, setAssignedOfficer] = useState("");
   const [approvedMembers, setApprovedMembers] = useState<Array<{ uid: string; fullName: string }>>([]);
+  const [organizationId, setOrganizationId] = useState<string | null>(null);
 
   // Fetch approved members from Firestore
   useEffect(() => {
@@ -40,13 +42,47 @@ const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
       }
     };
 
+    // Fetch the logged-in user's organizationId
+    const fetchUserOrganizationId = async () => {
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(db, "Users", user.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setOrganizationId(userData?.organizationId || null);
+          }
+        } catch (error) {
+          console.error("Error fetching user organizationId: ", error);
+        }
+      }
+    };
+
     fetchApprovedMembers();
+    fetchUserOrganizationId();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     try {
+      if (!organizationId) {
+        alert("Organization ID not found for the logged-in user.");
+        return;
+      }
+  
+      // Find the selected officer's memberId (uid)
+      const selectedMember = approvedMembers.find(
+        (member) => member.fullName === assignedOfficer
+      );
+  
+      if (!selectedMember) {
+        alert("No member selected.");
+        return;
+      }
+  
       // Add the task to Firestore
       await addDoc(collection(db, "tasks"), {
         taskName,
@@ -54,6 +90,8 @@ const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
         dueDate: new Date(dueDate),
         priority,
         assignedOfficer,
+        organizationId, // Include organizationId
+        memberId: selectedMember.uid, // Add memberId (uid)
       });
       console.log("Task added successfully!");
       alert("Task added successfully!");
@@ -62,6 +100,7 @@ const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
       console.error("Error adding task: ", error);
     }
   };
+  
 
   return (
     <div
@@ -78,7 +117,7 @@ const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
           className="absolute top-2 right-2 p-2 rounded-md hover:bg-gray-200 transition duration-200"
           style={{ backgroundColor: "#e8e8e8" }}
         >
-          <CloseIcon className="h-5 w-5 text-[#8736EA]" /> 
+          <CloseIcon className="h-5 w-5 text-[#8736EA]" />
         </button>
 
         <h2
@@ -176,7 +215,7 @@ const OfficerAddTask: React.FC<OfficerAddTaskProps> = ({ close }) => {
               </option>
               {approvedMembers.length > 0 ? (
                 approvedMembers.map((member) => (
-                  <option key={member.uid} value={member.uid}>
+                  <option key={member.uid} value={member.fullName}>
                     {member.fullName}
                   </option>
                 ))

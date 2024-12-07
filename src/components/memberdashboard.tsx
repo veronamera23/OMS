@@ -3,6 +3,8 @@ import { auth, db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import MemberSidebar from "./membersidebar";
+import Link from 'next/link';
+import MemTaskList from "./memtasklist"
 
 const MemberDashboard: React.FC = () => {
   const [firstName, setFirstName] = useState<string | null>(null);
@@ -86,7 +88,7 @@ const MemberDashboard: React.FC = () => {
             Current Date and Time
           </div>
           <div className="mx-14 text-black pending-tasks bg-orange-400 h-32 w-4/5  p-4">
-            Pending Tasks
+            <MemTaskList/>
           </div>
           <p
             className="mx-16 my-2 text-right hover:text-purple-700"
@@ -111,9 +113,11 @@ const MemberDashboard: React.FC = () => {
               onClick={handleOrgListRedirect}>
               View Orgs
             </button>
+            <Link href="/memberviewevents" >
             <button className="officer-action-buttons flex-grow">
-              View Events
+              View My Events
             </button>
+            </Link>
           </div>
           <p
             className="pt-2 pb-2"

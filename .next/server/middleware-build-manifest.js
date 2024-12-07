@@ -20,15 +20,15 @@ self.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/orgpage": [
+    "/login": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/orgpage.js"
+      "static/chunks/pages/login.js"
     ],
-    "/userevents": [
+    "/memberpage": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/userevents.js"
+      "static/chunks/pages/memberpage.js"
     ]
   },
   "ampFirstPages": []

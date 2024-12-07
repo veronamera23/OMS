@@ -5,8 +5,9 @@ import OfficerSidebar from "./officersidebar";
 import { auth, db } from "../firebaseConfig";
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import OfficerTasks from "./OfficerTasks";
+//import OfficerTasksListPage from "../pages/officertaskspage";
 import Link from 'next/link';
+import TaskList from './tasklist';
 
 const OfficerDashboard: React.FC = () => {
   const [isAddTaskOpen, setAddTaskOpen] = useState(false);
@@ -18,6 +19,7 @@ const OfficerDashboard: React.FC = () => {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [approvedMemberCount, setApprovedMemberCount] = useState<number>(0);
+  const [completedEventCount, setCompletedEventCount] = useState<number>(0);
 
   // Open/close the add task form
   const handleAddTaskClick = () => setAddTaskOpen(true);
@@ -56,6 +58,7 @@ const OfficerDashboard: React.FC = () => {
 
           // Fetch approved members for this organization
           fetchApprovedMembers(userData.organizationId);
+          fetchCompletedEvents(userData.organizationId)
         }
       }
     } catch (error) {
@@ -77,6 +80,20 @@ const OfficerDashboard: React.FC = () => {
       setApprovedMemberCount(memberSnapshot.size); // Set the count
     } catch (error) {
       console.error("Error fetching approved members:", error);
+    }
+  };
+
+  const fetchCompletedEvents = async (organizationId: string) => {
+    try {
+      const eventsQuery = query(
+        collection(db, "events"),
+        where("organizationId", "==", organizationId),
+        where("status", "==", "Upcoming") // Assuming the status for completed events is 'completed'
+      );
+      const eventSnapshot = await getDocs(eventsQuery);
+      setCompletedEventCount(eventSnapshot.size); // Set the count after fetching the events
+    } catch (error) {
+      console.error("Error fetching completed events:", error);
     }
   };
 
@@ -159,10 +176,17 @@ const OfficerDashboard: React.FC = () => {
                 {organizationData?.organizationDescription || "No description available."}
               </p>
             </div>
-
+            
             <div className="text-black pending-tasks bg-orange-400 col-span-2 p-4 rounded shadow">
-              Pending Tasks
+              <TaskList />
             </div>
+            <Link href="/officertaskspage"><p
+            className=" mx-100 my-1 text-right hover:text-purple-700"
+            style={{ fontSize: "16px", fontFamily: "Arial" }}
+          >
+            {" "}
+            View More
+          </p></Link>
           </div>
 
           <div className="text-black relative flex flex-col gap-4 w-full justify-end">
@@ -175,7 +199,9 @@ const OfficerDashboard: React.FC = () => {
               </span>
             </div>
             <div className="text-black eventstats h-20 w-full max-w-xs bg-gray-300 p-4 self-end">
-              Event Statistics
+              <span className="text-lg font-semibold">
+                {completedEventCount} events this year
+              </span>
             </div>
           </div>
         </div>
@@ -185,3 +211,8 @@ const OfficerDashboard: React.FC = () => {
 };
 
 export default OfficerDashboard;
+function setCompletedEventCount(size: number) {
+  throw new Error("Function not implemented.");
+}
+
+
