@@ -28,10 +28,10 @@
       "static/chunks/main.js",
       "static/chunks/pages/login.js"
     ],
-    "/memberpage": [
+    "/orgpage": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/memberpage.js"
+      "static/chunks/pages/orgpage.js"
     ]
   },
   "ampFirstPages": []

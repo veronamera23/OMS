@@ -9,7 +9,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 
 const OfficerSidebar: React.FC = () => {
   return (
-    <aside className="w-64 h-screen bg-gray-100 shadow-lg flex flex-col">
+    <aside className="w-64 h-auto bg-gray-100 shadow-lg flex flex-col">
       {/* Sidebar Title with Logo */}
       <div className="p-6 bg-gray-100 flex justify-center items-center">
         <img src="/assets/OMSLOGO.png" alt="OMS Logo" className="h-12 mt-4" /> 

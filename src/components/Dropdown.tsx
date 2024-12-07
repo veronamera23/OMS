@@ -8,7 +8,7 @@ export default function Dropdown() {
   return (
     <Menu as="div" className="relative inline-block">
       <div>
-        <MenuButton className="inline-flex w-full justify-center rounded-full px-3 py-2 text-sm font-semibold">
+        <MenuButton className="inline-flex w-full justify-center rounded-full px-3 text-sm font-semibold">
             <img alt="" src="/assets/dropdown.svg"className="h-8 w-auto"/>
         </MenuButton>
       </div>

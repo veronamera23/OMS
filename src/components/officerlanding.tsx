@@ -8,6 +8,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 //import OfficerTasksListPage from "../pages/officertaskspage";
 import Link from 'next/link';
 import TaskList from './tasklist';
+import Calendar from "./calendar";
 
 const OfficerDashboard: React.FC = () => {
   const [isAddTaskOpen, setAddTaskOpen] = useState(false);
@@ -190,8 +191,8 @@ const OfficerDashboard: React.FC = () => {
           </div>
 
           <div className="text-black relative flex flex-col gap-4 w-full justify-end">
-            <div className="text-black calendar h-64 w-full max-w-xs bg-gray-200 self-end">
-              Calendar
+            <div className="ml-72 h-auto w-auto max-w-xs">
+              <Calendar />
             </div>
             <div className="text-black memberstats h-20 w-full max-w-xs bg-gray-300 p-4 self-end flex items-center justify-center">
               <span className="text-lg font-semibold">

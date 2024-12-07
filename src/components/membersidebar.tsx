@@ -2,8 +2,16 @@ import React, { useEffect, useState } from "react";
 import InfoIcon from "@mui/icons-material/Info";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { auth, db } from "../firebaseConfig"; // Import your firebase config
-import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import Link from "next/link";
 
 const OfficerSidebar: React.FC = () => {
   const [userOrganizations, setUserOrganizations] = useState<any[]>([]); // Store list of organizations
@@ -14,7 +22,11 @@ const OfficerSidebar: React.FC = () => {
     try {
       // Query the 'Members' collection to find the user's approved organizations
       const membersRef = collection(db, "Members");
-      const q = query(membersRef, where("uid", "==", userId), where("status", "==", "approved"));
+      const q = query(
+        membersRef,
+        where("uid", "==", userId),
+        where("status", "==", "approved")
+      );
       const querySnapshot = await getDocs(q);
 
       const orgs = [];
@@ -58,10 +70,12 @@ const OfficerSidebar: React.FC = () => {
   }, []); // Empty dependency array means this runs only on mount
 
   return (
-    <aside className="w-64 h-screen bg-gray-100 shadow-lg flex flex-col">
+    <aside className="w-64 h-auto bg-gray-100 shadow-lg flex flex-col">
       {/* Sidebar Title with Logo */}
       <div className="p-6 bg-gray-100 flex justify-center items-center">
-        <img src="/assets/OMSLOGO.png" alt="OMS Logo" className="h-12 mt-4" />
+        <Link href="/memberpage">
+          <img src="/assets/OMSLOGO.png" alt="OMS Logo" className="h-12 mt-4" />
+        </Link>
       </div>
 
       {/* Navigation */}
@@ -70,11 +84,11 @@ const OfficerSidebar: React.FC = () => {
         {userOrganizations.map((org, index) => (
           <a
             key={index}
-            href="#"
+            href="/membervieworg"
             className="flex items-center px-6 py-3 text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition-colors"
           >
             {/* <img src={org.logo || "/assets/default-logo.png"} alt={org.name} className="h-6" /> */}
-            <span className="ml-3 text-md font-medium">{org.name}</span>
+              <span className="ml-3 text-md font-medium">{org.name}</span>
           </a>
         ))}
 
