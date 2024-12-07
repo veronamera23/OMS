@@ -5,14 +5,16 @@ import EventIcon from "@mui/icons-material/Event";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import InfoIcon from "@mui/icons-material/Info";
 import SettingsIcon from "@mui/icons-material/Settings";
-
+import Link from "next/link";
 
 const OfficerSidebar: React.FC = () => {
   return (
     <aside className="w-64 h-auto bg-gray-100 shadow-lg flex flex-col">
       {/* Sidebar Title with Logo */}
       <div className="p-6 bg-gray-100 flex justify-center items-center">
-        <img src="/assets/OMSLOGO.png" alt="OMS Logo" className="h-12 mt-4" /> 
+        <Link href="/orgpage">
+          <img src="/assets/OMSLOGO.png" alt="OMS Logo" className="h-12 mt-4" />
+        </Link>
       </div>
 
       {/* Navigation */}
