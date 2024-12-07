@@ -1,22 +1,25 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useState, FormEvent } from "react";
-import { auth, db } from "../firebaseConfig";
+import { auth, db, storage } from "../firebaseConfig";
 import { setDoc, doc, where, collection, query, getDocs } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+// import s3 from "./awsConfig";
 
 function RegisterOrg() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [oname, setOname] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [tags, setTags] = useState<string[]>([]); // State to track selected tags
-  const [otherTag, setOtherTag] = useState<string>(""); // State to track custom tag input
+  const [tags, setTags] = useState<string[]>([]);
+  const [otherTag, setOtherTag] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [selectedTag, setSelectedTag] = useState<string>(""); // State to track the currently selected tag
+  const [selectedTag, setSelectedTag] = useState<string>("");
+  const [logo, setLogo] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
-  // Function to validate input fields
   const validateInputs = (): boolean => {
     if (oname.trim().length < 3) {
       setErrorMessage("Organization name must be at least 3 characters.");
@@ -41,101 +44,132 @@ function RegisterOrg() {
     return true;
   };
 
-  // Function to check if the organization name is unique
   const isOrganizationNameUnique = async (oname: string): Promise<boolean> => {
     const orgQuery = query(collection(db, "Organizations"), where("name", "==", oname));
     const snapshot = await getDocs(orgQuery);
     return snapshot.empty;
   };
 
-  // Function to handle the registration process
   const handleRegister = async (e: FormEvent) => {
-    e.preventDefault(); // Prevent default form submission
-    if (!validateInputs()) return; // If validation fails, stop further execution
-  
-    setLoading(true); // Set loading state to true while processing
+    e.preventDefault();
+    if (!validateInputs()) return;
+
+    setLoading(true);
     try {
-      // Check if the organization name is unique
       if (!(await isOrganizationNameUnique(oname))) {
         setErrorMessage("Organization name already exists. Please choose another.");
         setTimeout(() => setErrorMessage(null), 3000);
         setLoading(false);
         return;
       }
-  
-      // Create a new user with the provided email and password
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user; // Get user object from returned credential
-  
+      const user = userCredential.user;
+
       if (user) {
-        // Generate a unique organizationId
         const organizationId = uuidv4();
-  
-        // Save the organization data in the Organizations collection
+        let photoURL = "";
+
+        if (logo) {
+          const logoRef = ref(storage, `logos/${organizationId}`);
+          await uploadBytes(logoRef, logo);
+          photoURL = await getDownloadURL(logoRef);
+        }
+
         await setDoc(doc(db, "Organizations", organizationId), {
           name: oname,
           email: user.email,
-          photo: "",
+          photo: photoURL,
           description: description,
           members: [user.uid],
           createdAt: new Date(),
-          tags: tags, // Store the selected tags
+          tags: tags,
         });
-  
-        // Save the user data in the Users collection
+
         await setDoc(doc(db, "Users", user.uid), {
           email: user.email,
           organizationId: organizationId,
           role: "organization",
         });
-  
+
         setSuccessMessage("User Registered Successfully! Redirecting...");
         setTimeout(() => (window.location.href = "/login"), 3000);
       }
-  
+
     } catch (error) {
       const errorMessage = (error as Error).message || "An unexpected error occurred.";
       setErrorMessage(errorMessage);
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
 
-  // Function to handle tag selection
   const handleTagChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
-    setSelectedTag(value); // Set selected tag
+    setSelectedTag(value);
 
     if (value === "other" && otherTag.trim() !== "") {
-      setTags(prevTags => [...prevTags, otherTag]); // Add custom tag to tags
+      setTags(prevTags => [...prevTags, otherTag]);
     } else if (value !== "other" && !tags.includes(value)) {
-      setTags(prevTags => [...prevTags, value]); // Add selected tag to tags
+      setTags(prevTags => [...prevTags, value]);
     }
   };
 
-  // Function to handle input change for custom tags
   const handleOtherTagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOtherTag(e.target.value); // Update the custom tag input value
+    setOtherTag(e.target.value);
   };
 
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const selectedLogo = e.target.files[0];
+      setLogo(selectedLogo);
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(selectedLogo);
+    }
+  };
+
+  // const uploadImages = async (): Promise<string[]> => {
+  //   const uploadedURLs: string[] = [];
+  //   for (const file of eventImages) {
+  //     try {
+  //       const bucketName = process.env.NEXT_PUBLIC_S3_BUCKET_NAME ?? "";
+  //       if (!bucketName) {
+  //           throw new Error("S3_BUCKET_NAME is not defined");
+  //       }
+
+  //       const params = {
+  //         Bucket: bucketName,
+  //         Key: `events/${encodeURIComponent(file.name)}`,
+  //         Body: file,
+  //         ContentType: file.type,
+  //       };
+
+  //       await s3.upload(params).promise();
+
+  //       const downloadURL = `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
+  //       uploadedURLs.push(downloadURL);
+  //       console.log("Uploaded file: ", downloadURL);
+  //     } catch (error) {
+  //       console.error("Error uploading file:", file.name, error);
+  //       throw error; 
+  //     }
+  //   }
+  //   return uploadedURLs;
+  // };
+
+
   return (
-    <div className="bg-gradient-to-bl from-cyan-400 to-fuchsia-600 min-h-screen flex items-center justify-center">
-      <div className="flex flex-col md:flex-row-reverse w-[65%] max-w-6xl bg-white shadow-lg rounded-xl overflow-hidden">
-        {/* Right Side - OMS Welcome Section */}
-        <div className="w-full md:w-1/2 bg-gradient-to-bl from-cyan-200 to-fuchsia-500 text-white p-8 flex flex-col justify-center items-center">
-          <img src="/assets/OMSLOGO.png" alt="OMS Logo" className="h-28 mb-6" />
-          <h1 className="text-3xl font-extrabold mb-4 text-center">Welcome to OMS</h1>
-          <p className="text-lg text-center mb-6">
-            Register your organization and start managing it efficiently with us.
-          </p>
-          <p className="text-center mt-8 text-sm">www.organizationmanagementsystem.com</p>
-        </div>
+    <div className="bg-gradient-to-bl from-cyan-400 to-fuchsia-600 min-h-screen flex items-center justify-center shadow-lg">
+      <div className="flex flex-col md:flex-row w-[65%] max-w-6xl bg-white shadow-lg rounded-xl overflow-hidden">
 
         {/* Left Side - Registration Form */}
         <div className="w-full md:w-1/2 p-8">
           <h3 className="text-2xl font-bold text-center mb-6">Register Organization</h3>
 
-          {/* Displaying error or success messages */}
           {errorMessage && (
             <div className="bg-red-500 text-white p-3 rounded-md mb-4 text-center">
               {errorMessage}
@@ -167,7 +201,7 @@ function RegisterOrg() {
               </label>
               <textarea
                 id="description"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="h-[50%] w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Enter a short description of your organization"
                 onChange={(e) => setDescription(e.target.value)}
                 required
@@ -181,7 +215,7 @@ function RegisterOrg() {
                 id="tags"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                 onChange={handleTagChange}
-                value={selectedTag} // Bind selectedTag state to dropdown
+                value={selectedTag}
               >
                 <option value="">Select a tag</option>
                 <option value="sports">Sports</option>
@@ -229,6 +263,48 @@ function RegisterOrg() {
               />
             </div>
 
+            <div className="flex items-center">
+              <div className="w-full md:w-2/3">
+                <label htmlFor="logo" className="block text-gray-600 font-medium mb-1">
+                  Upload Logo
+                </label>
+                    <div className="relative"> 
+                    <input
+                        type="file"
+                        id="logo"
+                        accept="image/*"
+                        onChange={handleLogoChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 opacity-0" 
+                    />
+                    <label htmlFor="logo" className="text-purple-500 text-m font-bold underline cursor-pointer absolute top-0 left-0 w-full h-full flex w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"> 
+                        Choose Org Logo
+                    </label>
+                </div>
+              </div>
+              <div className="w-24 h-24 rounded-full overflow-hidden ml-4 border-2 border-purple-500">
+                {logoPreview ? (
+                  <img src={logoPreview} alt="Logo Preview" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-12 w-12 text-gray-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <button
               type="submit"
               className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-md mt-4 hover:bg-blue-700 focus:outline-none"
@@ -243,6 +319,16 @@ function RegisterOrg() {
               Login
             </a>
           </p>
+        </div>
+
+        {/* Right Side - OMS Welcome Section */}
+        <div className="w-full md:w-1/2 bg-gradient-to-bl from-cyan-200 to-fuchsia-500 text-white p-8 flex flex-col justify-center items-center">
+          <img src="./assets/OMSLOGO.png" alt="OMS Logo" className="h-32 mb-6" />
+          <h1 className="text-3xl font-extrabold mb-4 text-center">Welcome to OMS</h1>
+          <p className="text-lg text-center mb-6">
+            Register your organization and start managing it efficiently with us.
+          </p>
+          <p className="text-center mt-8 text-sm">www.organizationmanagementsystem.com</p>
         </div>
       </div>
     </div>
