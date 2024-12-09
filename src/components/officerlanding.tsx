@@ -116,6 +116,7 @@ const OfficerDashboard: React.FC = () => {
 
   return (
     <div className="flex">
+      {/* <div className="sticky left-0 top-0 h-screen overflow-y-auto bg-white shadow-md"></div> */}
       {/* Sidebar */}
       <OfficerSidebar />
       {/* Main content */}
