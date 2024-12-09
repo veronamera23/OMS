@@ -5,10 +5,10 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import MemberSidebar from "./membersidebar";
 import Link from 'next/link';
 import MemTaskList from "./memtasklist"
-import MemberEventList from "./membereventlist";
+import OrgEventList from "./orgeventlist";
 import Calendar from "./calendar";
 
-const MemberDashboard: React.FC = () => {
+const MemberOrg: React.FC = () => {
   const [firstName, setFirstName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -75,72 +75,63 @@ const MemberDashboard: React.FC = () => {
           <MemberSidebar />
         </div>
         <div className="lg:col-start-2 mt-8">
-          <div className="welcome-message ml-auto">
-            Welcome back, {firstName || "User"}! {/* Display first name */}
-          </div>
-          <p style={{ fontSize: "16px", fontFamily: "Arial" }}>
-            {" "}
-            How are we doing today?
-          </p>
-          <hr className="my-4 border-black" />
-          <div className="ml-6" style={{width: '90%'}}>
-            <Calendar />
-          </div>
-          <div className="mx-32 my-5 text-black memberstats h-4 w-full max-w-xs bg-gray-300 p-4">
-            Current Date and Time
-          </div>
-          <div className="mx-14 text-black pending-tasks bg-gray-200 h-32 w-4/5  p-4">
-            <MemTaskList/>
-          </div>
-          <p
-            className="mx-16 my-2 text-right hover:text-purple-700"
-            style={{ fontSize: "16px", fontFamily: "Arial" }}
-          >
-            {" "}
-            View More
-          </p>
+            <div className="welcome-message ml-auto">
+                Welcome back, {firstName || "User"}! {/* Display first name */}
+            </div>
+            <p style={{ fontSize: "16px", fontFamily: "Arial" }}>
+                {" "}
+                Check out what's happening at "Organization Name"
+            </p>
+            <hr className="my-4 border-black" />
+            <OrgEventList />
+            <p
+                className="my-2 text-right hover:text-purple-700"
+                style={{ fontSize: "16px", fontFamily: "Arial" }}
+            >
+                {" "}
+                View More
+            </p>
+            <p className="pt-10" style={{ fontSize: "16px", fontFamily: "Arial" }}>
+                {" "}
+                What else would you like to do?
+            </p>
+            <div className="flex py-4 gap-4 w-min">
+                <Link href="/memberviewevents" >
+                    <button className="officer-action-buttons flex-grow">
+                        View My Events
+                    </button>
+                </Link>
+                <button 
+                    className="officer-action-buttons flex-grow"
+                    onClick={handleOrgListRedirect}>
+                    View Members
+                </button>
+            </div>
         </div>
         <div className="lg:col-start-3 mt-8 ml-6">
-          <button className="logout-button text-sm px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600 absolute right-[1.5rem] top-[2rem]"
-          onClick={handleLogout} >
-            Log Out
-          </button>
-          <p className="pt-10" style={{ fontSize: "16px", fontFamily: "Arial" }}>
-            {" "}
-            What else would you like to do?
-          </p>
-          <div className="flex py-4 gap-4 w-min">
-            <button 
-              className="officer-action-buttons flex-grow"
-              onClick={handleOrgListRedirect}>
-              View Orgs
+            <button className="logout-button text-sm px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600 absolute right-[1.5rem] top-[2rem]"
+                onClick={handleLogout} >
+                Log Out
             </button>
-            <Link href="/memberviewevents" >
-            <button className="officer-action-buttons flex-grow">
-              View My Events
-            </button>
-            </Link>
-          </div>
-          <p
-            className="pt-2 pb-2"
-            style={{ fontSize: "16px", fontFamily: "Arial" }}
-          >
-            {" "}
-            Check out what's happening...
-          </p>
-          <div style={{width: '90%'}}>
-            <MemberEventList/>
-          </div>
-          <p
-            className="mx-16 my-2 text-right hover:text-purple-700"
-            style={{ fontSize: "16px", fontFamily: "Arial" }}
-          >
-            {" "}
-            View More
-          </p>
+            <div className="mx-4 mt-16 h-60 max-w-lg">
+                <Calendar />
+            </div>
+            <div className="mx-4 mt-56 text-black memberstats h-4 w-full max-w-xs bg-gray-300 p-4">
+              Current Date and Time
+              </div>
+            <div className="mx-4 text-black pending-tasks bg-gray-200 h-32 max-w-lg  p-4">
+              <MemTaskList/>
+            </div>
+            <p
+                className="mx-16 my-2 text-right hover:text-purple-700"
+                style={{ fontSize: "16px", fontFamily: "Arial" }}
+            >
+                {" "}
+                View More
+            </p>
         </div>
       </div>
   );
 };
 
-export default MemberDashboard;
+export default MemberOrg;

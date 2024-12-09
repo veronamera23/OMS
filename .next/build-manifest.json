@@ -28,10 +28,17 @@
       "static/chunks/main.js",
       "static/chunks/pages/choose.js"
     ],
+    "/orgpage": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/orgpage.js"
+    ],
     "/registerorg": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/registerorg.js"
+    ]
+
     ]
   },
   "ampFirstPages": []
