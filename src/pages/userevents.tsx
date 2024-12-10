@@ -14,6 +14,8 @@ import OfficerSidebar from "../components/officersidebar";
 import EventIcon from "@mui/icons-material/Event";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import StarIcon from "@mui/icons-material/Star";
+import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
+import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import PeopleIcon from "@mui/icons-material/People";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebaseConfig";
@@ -36,6 +38,9 @@ interface Event {
   interests: number;
   engagements: number;
   organizationName?: string; // Add organization name
+  likedBy: string[];
+  dislikedBy: string[];
+  interestedBy: string[];
 }
 
 const Header: React.FC = () => (
@@ -272,9 +277,12 @@ const MyEventsView: React.FC = () => {
                     <tr key={index} className="even:bg-gray-50">
                       <td className="px-4 py-2">{event.eventName}</td>
                       <td className="px-4 py-2">{event.eventDate.toLocaleString()}</td>
-                      <td className="px-4 py-2">{event.interests}</td>
+                      <td className="px-4 py-2">{event.interestedBy ? event.interestedBy.length : 0}</td>
                       <td className="px-4 py-2">{event.status}</td>
-                      <td className="px-4 py-2">{event.engagements}</td>
+                      <td className="px-4 py-2">
+                        <ThumbUpOffAltIcon className="ml-2" /> {event.likedBy ? event.likedBy.length : 0}
+                        <ThumbDownOffAltIcon className="ml-2" /> {event.dislikedBy ? event.dislikedBy.length : 0}
+                      </td>
                     </tr>
                   ))
                 ) : (

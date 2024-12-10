@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, doc, getDoc, getDocs, Timestamp } from "firebase/firestore";
+import { arrayUnion, arrayRemove, collection, doc, getDoc, getDocs, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import SearchIcon from "@mui/icons-material/Search";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
@@ -9,6 +9,8 @@ import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import EventIcon from "@mui/icons-material/Event";
 import OfficerSidebar from "../components/officersidebar";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
+import { auth } from "../firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
 
 interface Event {
   uid: string;
@@ -24,6 +26,12 @@ interface Event {
   status: string;
   organizationId: string;
   registrations: string;
+  likedBy: string[];
+  dislikedBy: string[];
+  interestedBy: string[];
+  isLiked: boolean;
+  isDisliked: boolean;
+  isInterested: boolean;
 }
 
 const Header: React.FC = () => {
@@ -139,9 +147,9 @@ const SearchAndFilter: React.FC = () => {
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   const [orgName, setOrgName] = useState<string>("Loading...");
-  const [interested, setInterested] = useState(false);
-  const [liked, setLiked] = useState(false);
-  const [disliked, setDisliked] = useState(false);
+  const [interested, setInterested] = useState(event. isInterested);
+  const [liked, setLiked] = useState(event.isLiked);
+  const [disliked, setDisliked] = useState(event.isDisliked);
   
   useEffect(() => {
     const fetchOrganizationName = async () => {
@@ -165,42 +173,83 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
 
     fetchOrganizationName();
   }, [event.organizationId]);
+
   
-  const handleInterestedClick = () => {
+  const handleInterestedClick = async () => {
     setInterested(!interested);
+    const userId = auth.currentUser?.uid;
+    if (userId) {
+        const userRef = doc(db, "Users", userId);
+        await updateDoc(userRef, {
+            interestedEvents: interested ? arrayRemove(event.uid) : arrayUnion(event.uid),
+        });
+    }
+
+    const eventRef = doc(db, "events", event.uid);
+    await updateDoc(eventRef, {
+        interestedBy: interested ? arrayRemove(userId) : arrayUnion(userId),
+    });
   };
 
-  const handleLikeClick = () => {
+  const handleLikeClick = async () => {
+    const userId = auth.currentUser?.uid;
+
     setLiked(!liked);
     if (disliked) setDisliked(false);
-  };
 
-  const handleDislikeClick = () => {
+    if (userId) {
+        const userRef = doc(db, "Users", userId);
+        await updateDoc(userRef, {
+            likedEvents: liked ? arrayRemove(event.uid) : arrayUnion(event.uid),
+            dislikedEvents: arrayRemove(event.uid)
+        });
+    }
+
+    const eventRef = doc(db, "events", event.uid);
+    await updateDoc(eventRef, {
+        likedBy: liked ? arrayRemove(userId) : arrayUnion(userId),
+    });
+};
+
+  const handleDislikeClick = async() => {
+    const userId = auth.currentUser?.uid;
+
     setDisliked(!disliked);
     if (liked) setLiked(false);
+
+    if (userId) {
+        const userRef = doc(db, "Users", userId);
+        await updateDoc(userRef, {
+            dislikedEvents: disliked ? arrayRemove(event.uid) : arrayUnion(event.uid),
+            likedEvents: arrayRemove(event.uid)
+        });
+    }
+
+    const eventRef = doc(db, "events", event.uid);
+    await updateDoc(eventRef, {
+        dislikedBy: disliked ? arrayRemove(userId) : arrayUnion(userId),
+    });
   };
 
-  const truncateText = (text: string) => {
-    if (text.length > 100) {
-      return text.substring(0, 100) + "...";
-    }
-    return text;
+  const truncateText = (text: string | undefined) => {
+    return text && text.length > 100 ? text.substring(0, 100) + "..." : text || "";
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-4 mb-4">
+    <div className="bg-white shadow-md hover:shadow-lg hover:shadow-gray-500 rounded-lg p-4 mb-4">
       {event.eventImages && event.eventImages.length > 0 ? (
-              <img
-                src={event.eventImages[0]}
-                alt={event.eventImages[0]}
-                className="w-full h-48 object-cover rounded-md"
-              />
-            ) : (
-              <div className="w-full h-48 bg-gray-300 flex items-center justify-center rounded-md">
-                <p className="text-gray-500">No Image Available</p>
-              </div>
+        <img
+          src={event.eventImages[0]}
+          alt={event.eventImages[0]}
+          className="w-full h-48 object-cover rounded-md"
+        />
+      ) : (
+        <div className="w-full h-48 bg-gray-300 flex items-center justify-center rounded-md">
+          <p className="text-gray-500">No Image Available</p>
+        </div>
       )}
       <h2 className="text-xl font-semibold mt-4">{event.eventName}</h2>
+      <h2 className="text-xl font-semibold mt-4">{event.isLiked}</h2>
       <p className="text-gray-600 mt-2">
         {truncateText(event.eventDescription)}
       </p>
@@ -212,9 +261,9 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
         <EventIcon />
         &nbsp;
         {event.eventDate instanceof Date
-            ? event.eventDate.toLocaleDateString() // Format the date as a string
-            : event.eventDate}
-        </p>
+          ? event.eventDate.toLocaleDateString()
+          : event.eventDate}
+      </p>
 
       <div className="flex items-center mt-4">
         <div
@@ -237,7 +286,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
         </div>
 
         <button
-          className={`ml-20  px-4 py-2 rounded-md ${
+          className={`ml-20 px-4 py-2 rounded-md ${
             interested ? "bg-gray-500 text-white" : "bg-blue-500 text-white"
           }`}
           onClick={handleInterestedClick}
@@ -254,35 +303,71 @@ const EventsView: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const eventsRef = collection(db, "events");
-        const querySnapshot = await getDocs(eventsRef);
-        const eventsList = querySnapshot.docs.map((doc) => {
-          const data = doc.data() as Event;
-          return {
-            ...data,
-            uid: doc.id,
-            eventDate:
-              data.eventDate instanceof Timestamp
-                ? data.eventDate.toDate().toLocaleDateString()
-                : data.eventDate,
-          };
-        });
-        console.log("Events: ", eventsList);
-        setEvents(eventsList);
-      } catch (err) {
-        console.error("Error fetching events:", err);
-        setError("Failed to load events.");
-      } finally {
-        setLoading(false);
-      }
+  const fetchEvents = async () => {
+    setLoading(true);
+    setError(null);
+    const userId = auth.currentUser?.uid;
+    console.log("userId: ", userId);
+
+    let userEvents = {
+      likedEvents: [],
+      dislikedEvents: [],
+      interestedEvents: [],
     };
 
-    fetchEvents();
+    try {
+      if (userId) {
+        const userDoc = await getDoc(doc(db, "Users", userId));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          userEvents = {
+            likedEvents: userData.likedEvents || [],
+            dislikedEvents: userData.dislikedEvents || [],
+            interestedEvents: userData.interestedEvents || [],
+          };
+        }
+      }
+
+      const eventsRef = collection(db, "events");
+      const querySnapshot = await getDocs(eventsRef);
+      const eventsList = querySnapshot.docs.map((doc) => {
+        const data = doc.data() as Event;
+        console.log("Event: ", data);
+        return {
+          ...data,
+          uid: doc.id,
+          eventDate:
+            data.eventDate instanceof Timestamp
+              ? data.eventDate.toDate().toLocaleDateString()
+              : data.eventDate,
+          isLiked: userEvents.likedEvents.includes(doc.id as never),
+          isDisliked: userEvents.dislikedEvents.includes(doc.id as never),
+          isInterested: userEvents.interestedEvents.includes(doc.id as never),
+        };
+      });
+      setEvents(eventsList);
+    } catch (err) {
+      console.error("Error fetching events:", err);
+      setError("Failed to load events.");
+      setLoading(false);
+    }
+    finally {
+      console.log("Events: ", events);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setLoading(true);
+        fetchEvents();
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -302,7 +387,10 @@ const EventsView: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {events.length > 0 ? (
                 events.map((event) => (
-                  <EventCard key={event.uid} event={event} />
+                  <EventCard
+                    key={event.uid}
+                    event={event}
+                  />
                 ))
               ) : (
                 <div className="text-center text-gray-500 py-4">

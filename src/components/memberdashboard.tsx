@@ -68,7 +68,7 @@ const MemberDashboard: React.FC = () => {
 
   return (
       <div
-        className="grid lg:grid-cols-3"
+        className="grid lg:grid-cols-3 bg-white"
         style={{ gridTemplateColumns: "20% 40% 40%" }}
       >
         <div className="flex lg:col-start-1">
@@ -117,7 +117,7 @@ const MemberDashboard: React.FC = () => {
             </button>
             <Link href="/memberviewevents" >
             <button className="officer-action-buttons flex-grow">
-              View My Events
+              View All Events
             </button>
             </Link>
           </div>

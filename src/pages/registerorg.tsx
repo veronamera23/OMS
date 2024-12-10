@@ -4,7 +4,7 @@ import { auth, db, storage } from "../firebaseConfig";
 import { setDoc, doc, where, collection, query, getDocs } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-// import s3 from "./awsConfig";
+import s3 from "../components/awsConfig";
 
 function RegisterOrg() {
   const [email, setEmail] = useState<string>("");
@@ -50,6 +50,25 @@ function RegisterOrg() {
     return snapshot.empty;
   };
 
+  const uploadImage = async (file: File, organizationId: string): Promise<string> => {
+    const bucketName = process.env.NEXT_PUBLIC_S3_BUCKET_NAME ?? "";
+    if (!bucketName) {
+      throw new Error("S3_BUCKET_NAME is not defined");
+    }
+
+    const params = {
+      Bucket: bucketName,
+      Key: `logos/${organizationId}`,
+      Body: file,
+      ContentType: file.type,
+    };
+
+    await s3.upload(params).promise();
+
+    const downloadURL = `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
+    return downloadURL;
+  };
+
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
     if (!validateInputs()) return;
@@ -71,9 +90,7 @@ function RegisterOrg() {
         let photoURL = "";
 
         if (logo) {
-          const logoRef = ref(storage, `logos/${organizationId}`);
-          await uploadBytes(logoRef, logo);
-          photoURL = await getDownloadURL(logoRef);
+          photoURL = await uploadImage(logo, organizationId);
         }
 
         await setDoc(doc(db, "Organizations", organizationId), {
@@ -131,36 +148,6 @@ function RegisterOrg() {
       reader.readAsDataURL(selectedLogo);
     }
   };
-
-  // const uploadImages = async (): Promise<string[]> => {
-  //   const uploadedURLs: string[] = [];
-  //   for (const file of eventImages) {
-  //     try {
-  //       const bucketName = process.env.NEXT_PUBLIC_S3_BUCKET_NAME ?? "";
-  //       if (!bucketName) {
-  //           throw new Error("S3_BUCKET_NAME is not defined");
-  //       }
-
-  //       const params = {
-  //         Bucket: bucketName,
-  //         Key: `events/${encodeURIComponent(file.name)}`,
-  //         Body: file,
-  //         ContentType: file.type,
-  //       };
-
-  //       await s3.upload(params).promise();
-
-  //       const downloadURL = `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
-  //       uploadedURLs.push(downloadURL);
-  //       console.log("Uploaded file: ", downloadURL);
-  //     } catch (error) {
-  //       console.error("Error uploading file:", file.name, error);
-  //       throw error; 
-  //     }
-  //   }
-  //   return uploadedURLs;
-  // };
-
 
   return (
     <div className="bg-gradient-to-bl from-cyan-400 to-fuchsia-600 min-h-screen flex items-center justify-center shadow-lg">

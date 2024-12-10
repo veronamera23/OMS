@@ -186,15 +186,15 @@ const OfficerDashboard: React.FC = () => {
         {/* Organization Overview */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="org-overview flex flex-col gap-4">
-            <div className="org-logo-container flex items-center gap-6">
+            <div className="org-logo-container flex items-center gap-6 bg-transparent">
               <img
-                src={organizationData?.organizationLogo || "/assets/default-logo.png"}
+                src={organizationData?.organizationLogo ? organizationData.organizationLogo : "/assets/default-logo.png"}
                 alt="Organization Logo"
-                className="org-logo-img w-32 h-32 border-2 border-color-white rounded-full object-cover shadow"
+                className="org-logo-img w-36 h-36 rounded-full object-contain shadow"
               />
             </div>
 
-            <div className="absolute left ml-52">
+            <div className="absolute left ml-52 my-5">
               <h2 className="text-xl font-semibold">
                 {organizationData?.organizationName || "Organization Name"}
               </h2>

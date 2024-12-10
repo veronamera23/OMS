@@ -2,8 +2,7 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/login": "pages/login.js",
   "/memberpage": "pages/memberpage.js",
-  "/membervieworg": "pages/membervieworg.js",
-  "/orgpage": "pages/orgpage.js"
+  "/orgpage": "pages/orgpage.js",
+  "/events": "pages/events.js"
 }
