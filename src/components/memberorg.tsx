@@ -68,7 +68,7 @@ const MemberOrg: React.FC = () => {
 
   return (
       <div
-        className="grid lg:grid-cols-3"
+        className="grid lg:grid-cols-3 bg-white"
         style={{ gridTemplateColumns: "20% 40% 40%" }}
       >
         <div className="flex lg:col-start-1">
@@ -119,7 +119,7 @@ const MemberOrg: React.FC = () => {
             <div className="mx-4 mt-56 text-black memberstats h-4 w-full max-w-xs bg-gray-300 p-4">
               Current Date and Time
               </div>
-            <div className="mx-4 text-black pending-tasks bg-gray-200 h-32 max-w-lg  p-4">
+            <div className=" text-black pending-tasks h-45 max-w-[590px] p-5 flex justify-start">
               <MemTaskList/>
             </div>
             <p

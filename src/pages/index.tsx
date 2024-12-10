@@ -8,7 +8,7 @@ export default function HomePage() {
     <div>
       <Navbar />
       <Homepage />
-      <FAQ/>
+      {/* <FAQ/> */}
     </div>
   );
 }

@@ -16,18 +16,18 @@ import Link from 'next/link'
             </div>
             <div className="relative lg:col-start-4 lg:col-span-2 justify"> {/* card 2 */}
               <div className="absolute pt-32 pl-5">
-                <p style={{fontSize: '36px', fontFamily :'ADLaM Display', lineHeight :'1.22'}}><b>Login to an Account{<br/>}to enhance your{<br/>}OMS experience</b></p>
+                <p style={{fontSize: '36px', fontFamily :'Arial', lineHeight :'1.22'}}><b>Login to an Account{<br/>}to enhance your{<br/>}OMS experience</b></p>
               </div>
             </div>
             <div className="relative lg:col-start-4 lg:row-start-2 lg:col-span-2"> {/* card 3 */}
               <div className="absolute pl-5 pt-5">
-                <p style={{fontSize: '16px', fontFamily :'Inter', lineHeight :'1.1'}}>Whether you’re an officer overseeing activities or a{<br/>}regular member staying informed, logging in with your{<br/>}OMS Account provides you with the tools you need to{<br/>}stay engaged and connected.</p>
+                <p style={{fontSize: '16px', fontFamily :'Arial', lineHeight :'1.1'}}>Whether you’re an officer overseeing activities or a{<br/>}regular member staying informed, logging in with your{<br/>}OMS Account provides you with the tools you need to{<br/>}stay engaged and connected.</p>
               </div>
             </div>
             <div className="relative lg:col-start-4 lg:row-start-3"> {/* card 4 */}
               <Link href="/choose" className="absolute inset-px pt-5">
                   <div className='py-4 rounded-3xl' style={{backgroundColor: 'rgba(135,54,234,0.1)'}}>
-                    <div className='text-center' style={{fontSize: '32px', fontFamily: 'Inter'}}>
+                    <div className='text-center' style={{fontSize: '32px', fontFamily: 'Arial'}}>
                       Sign up
                     </div>
                   </div>
@@ -36,7 +36,7 @@ import Link from 'next/link'
             <div className="relative lg:col-start-5 lg:row-start-3"> {/* card 5 */}
             <Link href="/login" className="absolute inset-px pt-5">
                   <div className='py-4 rounded-3xl' style={{backgroundColor: 'rgba(135,54,234,0.1)'}}>
-                    <div className='text-center' style={{fontSize: '32px', fontFamily :'Inter'}}>
+                    <div className='text-center' style={{fontSize: '32px', fontFamily :'Arial'}}>
                       <p>Log in</p>
                     </div>
                   </div>
@@ -50,7 +50,7 @@ import Link from 'next/link'
                     <img src="/assets/arrow.svg" alt="arrow" className="rounded-l-sm rounded-b-sm mt-2"style={{backgroundClip: 'none'}}/>
                   </div>
                   <div className="relative lg:row-start-2 lg:col-span-2 rounded-3xl" style={{backgroundColor: 'rgba(135,54,234,1)'}}>
-                    <p className="pl-5 pt-10"style={{fontSize: '32px', fontFamily :'ADLaM Display', color: 'white'}}>Explore More</p>
+                    <p className="pl-5 pt-10"style={{fontSize: '32px', fontFamily :'Arial', color: 'white'}}>Explore More</p>
                   </div>  
                 </div>
               </a>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, Timestamp, updateDoc } from "firebase/firestore";
-import { auth, db} from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
 import SearchIcon from "@mui/icons-material/Search";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
@@ -172,6 +172,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
 
     fetchOrganizationName();
   }, [event.organizationId]);
+
   
   const handleInterestedClick = async () => {
     setInterested(!interested);
@@ -207,7 +208,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     await updateDoc(eventRef, {
         likedBy: liked ? arrayRemove(userId) : arrayUnion(userId),
     });
-  };
+};
 
   const handleDislikeClick = async() => {
     const userId = auth.currentUser?.uid;
@@ -233,13 +234,12 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     return text && text.length > 100 ? text.substring(0, 100) + "..." : text || "";
   };
 
-
   return (
     <div className="bg-white shadow-md rounded-lg p-4 mb-4">
       {event.eventImages && event.eventImages.length > 0 ? (
         <img
-          src={event.eventImages[0]}
-          alt={event.eventImages[0]}
+          src={event.eventImages[event.eventImages.length - 1]}
+          alt={event.eventImages[event.eventImages.length - 1]}
           className="w-full h-48 object-cover rounded-md"
         />
       ) : (

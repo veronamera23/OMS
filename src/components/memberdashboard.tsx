@@ -89,9 +89,10 @@ const MemberDashboard: React.FC = () => {
           <div className="mx-32 my-5 text-black memberstats h-4 w-full max-w-xs bg-gray-300 p-4">
             Current Date and Time
           </div>
-          <div className="mx-14 text-black pending-tasks bg-gray-200 h-32 w-4/5  p-4">
-            <MemTaskList/>
-          </div>
+          <div
+          className="mx-1 text-black pending-tasks bg-white h-34 w-[600px] p-5 flex justify-start">
+          <MemTaskList />
+        </div>
           <p
             className="mx-16 my-2 text-right hover:text-purple-700"
             style={{ fontSize: "16px", fontFamily: "Arial" }}
@@ -131,13 +132,13 @@ const MemberDashboard: React.FC = () => {
           <div style={{width: '90%'}}>
             <MemberEventList/>
           </div>
-          <p
-            className="mx-16 my-2 text-right hover:text-purple-700"
+          <Link href="/memberviewevents" ><p
+            className="mx-16 my-1 text-right hover:text-purple-700"
             style={{ fontSize: "16px", fontFamily: "Arial" }}
           >
             {" "}
             View More
-          </p>
+          </p></Link>
         </div>
       </div>
   );

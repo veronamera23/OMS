@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import {
+  Timestamp,
   collection,
+  doc,
+  getDoc,
   getDocs,
   query,
   where,
-  Timestamp,
-  doc,
-  getDoc,
+  deleteDoc,
 } from "firebase/firestore";
-import { db } from "../firebaseConfig";
 import { getAuth } from "firebase/auth";
 import OfficerSidebar from "../components/officersidebar";
 import EventIcon from "@mui/icons-material/Event";
@@ -18,8 +18,10 @@ import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import PeopleIcon from "@mui/icons-material/People";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
 import SearchIcon from "@mui/icons-material/Search";
+import DeleteIcon from "@mui/icons-material/Delete";
+import OfficerEditEvent from "../components/officerEditEvent";
 
 interface Event {
   uid: string;
@@ -32,11 +34,10 @@ interface Event {
   eventType: string;
   isFree: string;
   isOpenForAll: boolean;
+  tags: string[];
   status: string;
   organizationId: string;
   registrations: number;
-  interests: number;
-  engagements: number;
   organizationName?: string; // Add organization name
   likedBy: string[];
   dislikedBy: string[];
@@ -164,6 +165,8 @@ const MyEventsView: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [user, loadingUser] = useAuthState(auth);
+  const [isEditEventOpen, setEditEventOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   useEffect(() => {
     const fetchMyEvents = async () => {
@@ -239,6 +242,36 @@ const MyEventsView: React.FC = () => {
     fetchMyEvents();
   }, [user]);
 
+  const handleEdit = (event: Event) => {
+    setSelectedEvent(event);
+    setEditEventOpen(true);
+  };
+
+  const handleCloseEditEvent = () => {
+    setEditEventOpen(false);
+    setSelectedEvent(null);
+  };
+
+  const handleDelete = async (uid: string) => {
+    try {
+      await deleteDoc(doc(db, "events", uid));
+      console.log("Event deleted with UID:", uid);
+      
+      setEvents((prevEvents) => prevEvents.filter(event => event.uid !== uid));
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      setError("Failed to delete the event.");
+    }
+  };  
+
+  const handleUpdateEvent = (updatedEvent: Event) => {
+    setEvents(prevEvents => 
+      prevEvents.map(event => 
+        event.uid === updatedEvent.uid ? updatedEvent : event
+      )
+    );
+  };
+
   return (
     <div className="flex">
       <OfficerSidebar />
@@ -269,6 +302,12 @@ const MyEventsView: React.FC = () => {
                   <th className="px-4 py-2">
                     <PeopleIcon sx={{ color: "white" }} /> Engagements
                   </th>
+                  <th className="px-4 py-2">
+                    <PeopleIcon sx={{ color: "white" }} /> Action
+                  </th>
+                  <th className="px-4 py-2">
+                    <PeopleIcon sx={{ color: "white" }} /> Delete
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -282,6 +321,20 @@ const MyEventsView: React.FC = () => {
                       <td className="px-4 py-2">
                         <ThumbUpOffAltIcon className="ml-2" /> {event.likedBy ? event.likedBy.length : 0}
                         <ThumbDownOffAltIcon className="ml-2" /> {event.dislikedBy ? event.dislikedBy.length : 0}
+                      </td>
+                      <td className="px-4 py-2">
+                        <button 
+                          className="text-black-500 hover:underline"
+                          onClick={() => handleEdit(event)}
+                        >
+                          Edit
+                        </button>
+                      </td>
+                      <td className="px-4 py-2">
+                        <DeleteIcon 
+                          className="ml-2 cursor-pointer" 
+                          onClick={() => handleDelete(event.uid)}
+                        />
                       </td>
                     </tr>
                   ))
@@ -297,6 +350,13 @@ const MyEventsView: React.FC = () => {
           )}
         </div>
       </div>
+      {isEditEventOpen && selectedEvent && (
+        <OfficerEditEvent 
+          close={handleCloseEditEvent} 
+          event={selectedEvent}
+          onUpdate={handleUpdateEvent}
+        />
+      )}
     </div>
   );
 };

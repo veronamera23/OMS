@@ -214,7 +214,7 @@ input:focus, textarea:focus, button:focus {
   }
 
   .pending-tasks {
-    @apply bg-orange-500 text-white rounded-lg p-6 flex items-center justify-center text-lg font-bold;
+    @apply text-white rounded-lg p-6 flex items-center justify-center text-lg font-bold;
     height: 16rem;
     width: 48rem; 
   }
