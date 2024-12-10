@@ -9,7 +9,7 @@ import Link from "next/link";
 
 const OfficerSidebar: React.FC = () => {
   return (
-    <aside className="w-64 h-auto bg-gray-100 shadow-lg flex flex-col">
+    <aside className="w-64 h-screen bg-gray-100 shadow-lg flex flex-col">
       {/* Sidebar Title with Logo */}
       <div className="p-6 bg-gray-100 flex justify-center items-center">
         <Link href="/orgpage">

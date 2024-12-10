@@ -38,7 +38,12 @@ const MemberPage = () => {
     return () => unsubscribe(); // Cleanup listener on unmount
   }, [router]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div style={{
+    display: 'flex',
+    justifyContent: 'center',  
+    alignItems: 'center',     
+    height: '100vh',        
+    fontSize: '1.rem',   }}>Loading...</div>; 
 
   // Render MemberDashboard if the user is a member
   return isMember ? <MemberDashboard /> : null;

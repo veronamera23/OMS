@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
 import { doc, getDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import GroupIcon from "@mui/icons-material/Group";
+import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 
 interface Task {
   id: string;
@@ -81,20 +84,58 @@ const TaskList: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      {loading && <p>Loading tasks...</p>}
-      {error && <p>{error}</p>}
-      {!loading && tasks.length === 0 && <p>No tasks available.</p>}
-      {!loading &&
-        tasks.map((task) => (
-          <div key={task.id}>
-            <h3>{task.taskName}</h3>
-            <p>{task.description}</p>
-            <p>{task.dueDate}</p>
-            <p>{task.priority}</p>
-            <p>{task.assignedOfficer}</p>
+    <div
+      className="pending-tasks-container bg-gray-100 p-4 rounded w-full h-64 overflow-auto"
+      style={{
+        maxWidth: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+      }}
+    >
+      <h1 className="font-bold text-2xl text-purple-700 bg-gray-100 z-10">
+        Pending Tasks
+      </h1>
+      <hr className="border-purple-700 border-1" />
+      <div className="task-list flex flex-col gap-2">
+        {loading && <p className="text-gray-700">Loading tasks...</p>}
+        {error && <p className="text-gray-700">{error}</p>}
+        {!loading && tasks.length === 0 && <p className="text-gray-700">No tasks available.</p>}
+        {!loading && !error && tasks.map((task) => (
+          <div
+            key={task.id}
+            className="task-item bg-gray-100 p-3 rounded transition-shadow duration-200 hover:shadow-lg hover:shadow-purple-300"
+            style={{
+              wordWrap: "break-word",
+            }}
+          >
+            {/* Task Name */}
+            <h3 className="font-semibold text-md text-purple-700 mb-1">{task.taskName}</h3>
+
+            {/* Due Date, Assigned Officer, and Priority */}
+            <div className="flex gap-4 text-sm text-gray-500">
+              <div className="flex items-center gap-2">
+                <CalendarTodayIcon className="text-purple-700" />
+                <span>Due: {task.dueDate}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <GroupIcon className="text-purple-700" />
+                <span>Assigned to: {task.assignedOfficer}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <PriorityHighIcon className="text-purple-700" />
+                <span>Priority: {task.priority}</span>
+              </div>
+            </div>
+
+            {/* Task Description */}
+            <p className="mt-2 text-gray-500 text-sm">{task.description}</p>
+
+            {/* Purple Horizontal Line */}
+            <hr className="mt-2 border-purple-700 border-2" />
           </div>
         ))}
+      </div>
     </div>
   );
 };

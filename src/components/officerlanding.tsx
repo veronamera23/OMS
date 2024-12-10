@@ -108,19 +108,43 @@ const OfficerDashboard: React.FC = () => {
       }
     });
 
-    // Clean up the listener when the component unmounts
     return () => unsubscribe();
-  }, []); // Empty dependency array to run effect only once on mount
+  }, []); 
 
-  if (loading) return <div>Loading...</div>; // Display loading state while fetching data
+  if (loading) return <div style={{
+        display: 'flex',
+        justifyContent: 'center',  
+        alignItems: 'center',     
+        height: '100vh',        
+        fontSize: '1.rem',   }}>Loading...</div>; 
+  
+    // Calendar Logic
+    const date = new Date();
+    const currentMonth = date.getMonth();
+    const currentYear = date.getFullYear();
+  
+    const firstDay = (new Date(currentYear, currentMonth)).getDay();
+    const daysInMonth = 32 - new Date(currentYear, currentMonth, 32).getDate();
+  
+    const daysArray = [];
+    for (let i = 0; i < firstDay; i++) {
+      daysArray.push(null);
+    }
+    for (let i = 1; i <= daysInMonth; i++) {
+      daysArray.push(i);
+    }
+  
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
 
   return (
     <div className="flex">
-      {/* <div className="sticky left-0 top-0 h-screen overflow-y-auto bg-white shadow-md"></div> */}
+      <div className="sticky left-0 top-0 h-screen overflow-y-auto shadow-md">
       {/* Sidebar */}
-      <OfficerSidebar />
+      <OfficerSidebar /></div> 
       {/* Main content */}
-      <main className="main-content flex-grow p-6 relative">
+      <main className="main-content flex-grow p-6 relative bg-white">
         <header className="header mb-6 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">
@@ -144,7 +168,7 @@ const OfficerDashboard: React.FC = () => {
           <button className="officer-action-buttons flex-grow" onClick={handleAddEventClick}>
             Add Event
           </button>
-          <Link href="/#">
+          <Link href="/viewofficersofficerview">
           <button className="officer-action-buttons flex-grow">View Officers</button>
           </Link>
           <Link href="/userevents">
@@ -166,7 +190,7 @@ const OfficerDashboard: React.FC = () => {
               <img
                 src={organizationData?.organizationLogo || "/assets/default-logo.png"}
                 alt="Organization Logo"
-                className="org-logo-img w-24 h-24 rounded-full object-cover shadow"
+                className="org-logo-img w-32 h-32 border-2 border-color-white rounded-full object-cover shadow"
               />
             </div>
 
@@ -179,28 +203,48 @@ const OfficerDashboard: React.FC = () => {
               </p>
             </div>
             
-            <div className="text-black pending-tasks bg-orange-400 col-span-2 p-4 rounded shadow">
+            <div className="text-black rounded-lg shadow-lg pending-tasks bg-gray-100 h-72 col-span-2 p-4 rounded shadow relative">
               <TaskList />
             </div>
-            <Link href="/officertaskspage"><p
-            className=" mx-100 my-1 text-right hover:text-purple-700"
-            style={{ fontSize: "16px", fontFamily: "Arial" }}
-          >
-            {" "}
-            View More
-          </p></Link>
+            <Link href="/officertaskspage"> <p
+              className="text-purple-700 text-right underline absolute bottom-3 text-sm z-50 mx-100 my-0.5 hover:text-purple-700"
+              style={{ fontSize: "16px", fontFamily: "Arial", right: "24rem"}}
+            >
+              {" "}
+              View More
+            </p></Link>
           </div>
+          <div className="text-black relative flex flex-col w-full justify-end">
+            <div className="-mt-6 text-black calendar h-96 bg-white self-end">
+              <div className="calendar-container -mr-4 p-6 rounded-lg shadow-md bg-gray-100 self-end transition-shadow duration-200 hover:shadow-lg hover:shadow-purple-300">
+                <div className="calendar-header text-purple-700 font-bold">
+                  <h3 className="text-lg">{monthNames[currentMonth]} {currentYear}</h3>
+                </div>
+                <div className="calendar-grid grid grid-cols-7 gap-2">
+                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                    <div key={day} className="text-center text-purple-600 font-medium">
+                      {day}
+                    </div>
+                  ))}
 
-          <div className="text-black relative flex flex-col gap-4 w-full justify-end">
+                  {daysArray.map((day, index) => (
+                    <div key={index} className={`text-center h-10 border border-purple-300 rounded-md flex flex-col justify-center items-center relative ${day === date.getDate() ? 'bg-purple-300' : ''}`}>
+                      <span className="text-lg">{day}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          {/* <div className="text-black relative flex flex-col gap-4 w-full justify-end">
             <div className="ml-72 h-auto w-auto max-w-xs">
               <Calendar />
-            </div>
-            <div className="text-black memberstats h-20 w-full max-w-xs bg-gray-300 p-4 self-end flex items-center justify-center">
+            </div> */}
+            <div className="memberstats -mt-2 text-purple-700 h-16 w-full max-w-xs bg-gray-100 p-4 self-end flex items-center rounded-lg shadow-md justify-center transition-shadow duration-200 hover:shadow-lg hover:shadow-purple-300">
               <span className="text-lg font-semibold">
-               {approvedMemberCount} total members
+                {approvedMemberCount} total members
               </span>
             </div>
-            <div className="text-black eventstats h-20 w-full max-w-xs bg-gray-300 p-4 self-end">
+            <div className="eventstats text-purple-700  h-16 w-full max-w-xs bg-gray-100 p-4 self-end rounded-lg shadow-md transition-shadow duration-200 hover:shadow-lg hover:shadow-purple-300">
               <span className="text-lg font-semibold">
                 {completedEventCount} events this year
               </span>
