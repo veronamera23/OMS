@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, doc, getDoc, getDocs, query, where, Timestamp } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
@@ -37,7 +37,6 @@ const MemberDashboard: React.FC<MemberDashboardProps> = ({ user }) => {
     setError(null);
 
     try {
-      // Fetch user's organization ID
       const userDocRef = doc(db, "Users", user.uid);
       const userDoc = await getDoc(userDocRef);
 
@@ -56,7 +55,6 @@ const MemberDashboard: React.FC<MemberDashboardProps> = ({ user }) => {
         return;
       }
 
-      // Query events based on the organization ID
       const eventsRef = collection(db, "events");
       const q = query(eventsRef, where("organizationId", "==", organizationId));
       const querySnapshot = await getDocs(q);
@@ -71,6 +69,9 @@ const MemberDashboard: React.FC<MemberDashboardProps> = ({ user }) => {
           ...data,
           uid: doc.id,
           eventDate: eventDate.toLocaleDateString(),
+          isLiked: data.likedBy?.includes(user.uid),
+          isDisliked: data.dislikedBy?.includes(user.uid),
+          isInterested: data.interestedBy?.includes(user.uid),
         };
       });
 
@@ -90,8 +91,50 @@ const MemberDashboard: React.FC<MemberDashboardProps> = ({ user }) => {
   }, [user]);
 
   const handleEventAction = async (eventId: string, action: "like" | "dislike" | "interest") => {
-    // Functionality to handle like, dislike, and interest actions (similar to MemberEventList)
-    // For simplicity, the implementation is omitted here
+    try {
+      const eventDocRef = doc(db, "events", eventId);
+      const eventDoc = await getDoc(eventDocRef);
+
+      if (!eventDoc.exists()) {
+        setError("Event not found.");
+        return;
+      }
+
+      const eventData = eventDoc.data() as Event;
+
+      let updatedField: Partial<Event> = {};
+      switch (action) {
+        case "like":
+          updatedField = {
+            likedBy: eventData.likedBy?.includes(user.uid)
+              ? eventData.likedBy.filter((id) => id !== user.uid)
+              : [...(eventData.likedBy || []), user.uid],
+            dislikedBy: eventData.dislikedBy?.filter((id) => id !== user.uid),
+          };
+          break;
+        case "dislike":
+          updatedField = {
+            dislikedBy: eventData.dislikedBy?.includes(user.uid)
+              ? eventData.dislikedBy.filter((id) => id !== user.uid)
+              : [...(eventData.dislikedBy || []), user.uid],
+            likedBy: eventData.likedBy?.filter((id) => id !== user.uid),
+          };
+          break;
+        case "interest":
+          updatedField = {
+            interestedBy: eventData.interestedBy?.includes(user.uid)
+              ? eventData.interestedBy.filter((id) => id !== user.uid)
+              : [...(eventData.interestedBy || []), user.uid],
+          };
+          break;
+      }
+
+      await updateDoc(eventDocRef, updatedField);
+      fetchEvents();
+    } catch (err) {
+      console.error(`Error handling event action (${action}):`, err);
+      setError("Failed to update event.");
+    }
   };
 
   const truncateText = (text: string | undefined) => {

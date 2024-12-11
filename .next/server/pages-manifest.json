@@ -2,7 +2,9 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/memberpage": "pages/memberpage.js",
+  "/membervieworg": "pages/membervieworg.js",
+  "/orgpage": "pages/orgpage.js",
   "/": "pages/index.js",
-  "/membervieworg": "pages/membervieworg.js"
+  "/memberspageofficerview": "pages/memberspageofficerview.js",
+  "/memberpage": "pages/memberpage.js"
 }

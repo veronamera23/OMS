@@ -87,8 +87,39 @@ const MemberOrg: React.FC = () => {
             <span>Back to Dashboard</span>
           </Link>
         </div>
-        <div className="welcome-message ml-auto">
-          <b>Welcome back, {firstName || "User"}! {/* Display first name */}</b>
+        <div className="lg:col-start-2 ml-auto">
+            <div className="welcome-message ml-auto">
+                Welcome back, {firstName || "User"}! {/* Display first name */}
+            </div>
+            <p style={{ fontSize: "16px", fontFamily: "Arial" }}>
+                {" "}
+                Check out what's happening at "Organization Name"
+            </p>
+            <hr className="my-4 border-black" />
+            <OrgEventList user={undefined} />
+            <p
+                className="my-2 text-right hover:text-purple-700"
+                style={{ fontSize: "16px", fontFamily: "Arial" }}
+            >
+                {" "}
+                View More
+            </p>
+            <p className="pt-10" style={{ fontSize: "16px", fontFamily: "Arial" }}>
+                {" "}
+                What else would you like to do?
+            </p>
+            <div className="flex py-4 gap-4 w-min">
+                <Link href="/memberviewevents" >
+                    <button className="officer-action-buttons flex-grow">
+                        View My Events
+                    </button>
+                </Link>
+                <button 
+                    className="officer-action-buttons flex-grow"
+                    onClick={handleOrgListRedirect}>
+                    View Members
+                </button>
+            </div>
         </div>
         <p style={{ fontSize: "16px", fontFamily: "Arial" }}>
           {" "}
