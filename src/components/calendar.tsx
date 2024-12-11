@@ -8,7 +8,7 @@ import events from "./events";
 
 export default function Calendar() {
   return (
-    <div className="App">
+    <div>
       <FullCalendar
         initialView="dayGridMonth"
         themeSystem="Simplex"

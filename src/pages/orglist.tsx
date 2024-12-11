@@ -6,6 +6,8 @@ import MemberSidebar from "../components/membersidebar";
 import SearchIcon from "@mui/icons-material/Search";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Link from "next/link";
 
 
 const Header: React.FC = () => {
@@ -16,10 +18,10 @@ const Header: React.FC = () => {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-gray-200">
       <div>
-        <h1 className="text-3xl font-semibold text-gray-800">
-          Welcome back, user! {/* Display user's first name */}
-        </h1>
-        <p className="text-lg text-gray-500">Check out what's happening...</p>
+        <Link href="/memberpage" className="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
+          <ArrowBackIcon />
+          <span>Back to Dashboard</span>
+        </Link>
       </div>
       {/* <div className="flex items-center space-x-4 mt-4 md:mt-0">
         <button
@@ -231,14 +233,98 @@ const OrgList: React.FC = () => {
       <div className="flex-grow p-6 bg-white">
           <Header />
           <SearchAndFilter />
-          <div className="orglist-container p-4">
+          {/* To add another org copy here */}
+          <div className="grid lg:grid-cols-2 p-1 mt-2 m-auto text-black h-32 w-full transition-shadow duration-200 hover:shadow-lg hover:shadow-gray-300" style={{gridTemplateColumns: "80% 20%"}}>
+            <div className="lg:col-start-1">
+              <div
+                  className="p-2 flex flex-col lg:flex-row"
+                  style={{
+                    display: 'flex',
+                    transition: 'box-shadow 0.2s ease',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div
+                    className="mb-4 w-60 h-20 rounded bg-gray-200"
+                    style={{
+                      width: '100px',
+                      height: '100px',
+                      borderRadius: '8px',
+                      backgroundColor: '#E5E7EB',
+                    }}
+                  >
+                    <img
+                      src="/assets/komsai.png"
+                      className="w-full h-full object-cover rounded"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        borderRadius: '8px',
+                      }}
+                    />
+                  </div>
+                  <div
+                    className="ml-8 mt-2 flex flex-col"
+                    style={{
+                      marginLeft: '2rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontSize: '20px',
+                        fontFamily: 'Inter',
+                        fontWeight: 'bold',
+                        marginBottom: '8px',
+                      }}
+                    >
+                      Org Name
+                    </p>
+                    <p
+                      style={{
+                        fontSize: '14px',
+                        fontFamily: 'Inter',
+                        lineHeight: '0.5',
+                        color: '#4B5563',
+                      }}
+                    >
+                      Org Description
+                    </p>
+                    </div>
+                  </div>
+                  
+                </div>
+                <div className="lg:col-start-2 justify-center text-center w-full pt-10 pr-5">
+                    <button className="bg-purple-600 text-white p-2 w-56 rounded-lg hover:bg-purple-700 ">
+                          <p
+                              className="mx-1 w-auto"
+                              style={{
+                                fontSize: '20px',
+                                fontFamily: 'Inter',
+                              }}
+                            >
+                              Join Organization
+                            </p>
+                        </button>
+                  </div>
+            </div>
+            
+            {/* Copy until here */}
+          </div>
+          
+
+
+          {/*<div className="orglist-container p-4">
             <h1 className="text-2xl font-semibold mb-4">Organization List</h1>
-            {/* <button
-            className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
-            onClick={() => (window.location.href = "/memberdashboard")}
-            >
-            Back to Dashboard
-            </button> */}
+            // <button
+            // className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
+            // onClick={() => (window.location.href = "/memberdashboard")}
+            // >
+            // Back to Dashboard
+            // </button>
             <ul className="mt-4 space-y-2">
               {organizations.length > 0 ? (
                 organizations.map((org) => (
@@ -256,9 +342,9 @@ const OrgList: React.FC = () => {
                 <li>No organizations found.</li>
              )}
             </ul>
-          </div>
-        </div>
-      </div>
+          </div> */}
+    </div>
+    
   );
 };
 

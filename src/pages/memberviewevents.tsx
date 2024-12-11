@@ -10,6 +10,8 @@ import EventIcon from "@mui/icons-material/Event";
 import MemberSidebar from "../components/membersidebar"
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import { onAuthStateChanged } from "firebase/auth";
+import Link from "next/link";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 interface Event {
   uid: string;
@@ -35,7 +37,14 @@ interface Event {
 
 const Header: React.FC = () => {
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-gray-200">
+
+    <div className="flex flex-col md:flex-col justify-between pb-4 border-b border-gray-200">
+      <div className="py-2">
+        <Link href="/memberpage" className="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
+          <ArrowBackIcon />
+          <span>Back to Dashboard</span>
+        </Link>
+      </div>
       <div>
         <h1 className="text-3xl font-semibold text-gray-800">
           Welcome back! 

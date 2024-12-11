@@ -67,9 +67,8 @@ const MemTaskList: React.FC = () => {
 
   return (
     <div
-      className="pending-tasks-container bg-gray-100 p-4 rounded w-600 max-w-full h-64 overflow-auto"
+      className="pending-tasks-container bg-gray-100 p-4 rounded w-full h-64 overflow-auto"
       style={{
-        width: "92%",
         display: "flex",
         flexDirection: "column",
         gap: "8px",

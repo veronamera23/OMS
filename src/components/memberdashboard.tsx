@@ -11,6 +11,8 @@ import Calendar from "./calendar";
 const MemberDashboard: React.FC = () => {
   const [firstName, setFirstName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const currDate = new Date().toLocaleDateString();
+  const currTime = new Date().toLocaleTimeString();
 
   const handleLogout = async () => {
     try {
@@ -83,18 +85,22 @@ const MemberDashboard: React.FC = () => {
             How are we doing today?
           </p>
           <hr className="my-4 border-black" />
-          <div className="ml-6" style={{width: '90%'}}>
-            <Calendar />
+          <div className="text-black rounded-lg shadow-lg bg-gray-100 relative">
+            <div className="ml-6 py-6" style={{width: '90%'}}>
+              <Calendar />
+            </div>
           </div>
-          <div className="mx-32 my-5 text-black memberstats h-4 w-full max-w-xs bg-gray-300 p-4">
-            Current Date and Time
+          
+          <div className="mx-32 my-5 text-black memberstats h-4 w-full max-w-xs p-4">
+            <p className="flex mr-6" style={{ fontSize: "22px", fontFamily: "Arial" }}>{currDate}</p>
+            <p style={{ fontSize: "22px", fontFamily: "Arial" }}>{currTime}</p>
           </div>
           <div
-          className="mx-1 text-black pending-tasks bg-white h-34 w-[600px] p-5 flex justify-start">
+          className=" text-black bg-white h-34 w-full rounded-lg shadow-lg">
           <MemTaskList />
         </div>
           <p
-            className="mx-16 my-2 text-right hover:text-purple-700"
+            className="my-2 text-right hover:text-purple-700"
             style={{ fontSize: "16px", fontFamily: "Arial" }}
           >
             {" "}
@@ -106,7 +112,7 @@ const MemberDashboard: React.FC = () => {
           onClick={handleLogout} >
             Log Out
           </button>
-          <p className="pt-10" style={{ fontSize: "16px", fontFamily: "Arial" }}>
+          <p className="pt-7" style={{ fontSize: "16px", fontFamily: "Arial" }}>
             {" "}
             What else would you like to do?
           </p>
@@ -133,8 +139,8 @@ const MemberDashboard: React.FC = () => {
             <MemberEventList/>
           </div>
           <Link href="/memberviewevents" ><p
-            className="mx-16 my-1 text-right hover:text-purple-700"
-            style={{ fontSize: "16px", fontFamily: "Arial" }}
+            className="ml-5 my-1 text-right hover:text-purple-700"
+            style={{width: '90%', fontSize: "16px", fontFamily: "Arial" }}
           >
             {" "}
             View More
