@@ -203,7 +203,7 @@ const OfficerDashboard: React.FC = () => {
               </p>
             </div>
             
-            <div className="text-black rounded-lg shadow-lg pending-tasks bg-gray-100 h-72 col-span-2 p-4 rounded shadow relative">
+            <div className="text-black rounded-lg shadow-lg pending-tasks bg-gray-100 h-72 col-span-2 p-4 relative">
               <TaskList />
             </div>
             <Link href="/officertaskspage"> <p

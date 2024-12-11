@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import InfoIcon from "@mui/icons-material/Info";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { auth, db } from "../firebaseConfig"; // Import your firebase config
 import {
@@ -73,6 +74,13 @@ const MemberSidebar: React.FC = () => {
       </div>
 
       <nav className="flex-grow mt-4">
+        <a
+          href="/memberpage"
+          className="flex items-center px-6 py-3 text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition-colors"
+        >
+          <DashboardIcon />
+          <span className="ml-3 text-md font-medium">Dashboard</span>
+        </a>
         {userOrganizations.map((org, index) => (
           <a
             key={index}

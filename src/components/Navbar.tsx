@@ -12,7 +12,7 @@ export default function Navbar() {
         >
           <div className="flex lg:flex-1">
             <button>
-              <img alt="" src="/assets/logo.svg" className="h-8 w-auto" />
+              <img alt="" src="/assets/OMSLOGO.png" className="h-8 w-auto" />
             </button>
           </div>
           <div className="lg:flex lg:justify-end">
