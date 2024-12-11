@@ -13,7 +13,7 @@ import {
 import { onAuthStateChanged } from "firebase/auth";
 import Link from "next/link";
 
-const OfficerSidebar: React.FC = () => {
+const MemberSidebar: React.FC = () => {
   const [userOrganizations, setUserOrganizations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -114,4 +114,4 @@ const OfficerSidebar: React.FC = () => {
   );
 };
 
-export default OfficerSidebar;
+export default MemberSidebar;

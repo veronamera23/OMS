@@ -150,7 +150,7 @@ const MemberEventList: React.FC = () => {
     <div>
       <div className="grid gap-2 p-1 m-auto text-black h-auto w-full">
         {events.map((event) => (
-          <div key={event.uid} className="p-2 mb-6 flex flex-col lg:flex-row items-center transition-shadow duration-200 hover:shadow-lg hover:shadow-gray-300">
+          <div key={event.uid} className="p-2 mb-6 flex flex-col lg:flex-row items-center transition-shadow  shadow-md duration-200 hover:shadow-lg hover:shadow-gray-300">
             <div className="mb-4 w-60 h-20 rounded bg-gray-200">
               <img
                 src={Array.isArray(event.eventImages) && event.eventImages.length > 0 ? event.eventImages[0] : "/assets/komsai.png"}
@@ -159,21 +159,22 @@ const MemberEventList: React.FC = () => {
               />
             </div>
             <div className="ml-8 flex flex-col">
-              <p style={{ fontSize: '18px', fontFamily: 'Inter' }}><b>{event.eventName}</b></p>
-              <p style={{ fontSize: '12px', fontFamily: 'Inter', lineHeight: '0.5' }}>{truncateText(event.eventDescription)}</p>
+              <p style={{ fontSize: '18px', fontFamily: 'Arial' }}><b>{event.eventName}</b></p>
+              <p style={{ fontSize: '12px', fontFamily: 'Arial', lineHeight: '0.5' }}>{truncateText(event.eventDescription)}</p>
 
               <div className="flex mt-4">
-                <div className="mr-2 flex items-center cursor-pointer" onClick={() => handleEventAction(event.uid, "like")}>
+                <div className={`mr-2 flex items-center cursor-pointer ${event.isLiked ? 'text-green-500' : ''}`}
+                  onClick={() => handleEventAction(event.uid, "like")}>
                   {event.isLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />}
-                  <p className="mx-1" style={{ fontSize: '12px', fontFamily: 'Inter' }}>Like</p>
+                  <p className="mx-1" style={{ fontSize: '13px', fontFamily: 'Arial' }}>Like</p>
                 </div>
-                <div className="mr-2 flex items-center cursor-pointer" onClick={() => handleEventAction(event.uid, "dislike")}>
+                <div className={`mr-2 flex items-center cursor-pointer ${event.isDisliked ? 'text-red-500' : ''}`}
+                  onClick={() => handleEventAction(event.uid, "dislike")}>
                   {event.isDisliked ? <ThumbDownIcon /> : <ThumbDownOffAltIcon />}
-                  <p className="mx-1" style={{ fontSize: '12px', fontFamily: 'Inter' }}>Dislike</p>
+                  <p className="mx-1" style={{ fontSize: '13px', fontFamily: 'Arial' }}>Dislike</p>
                 </div>
                 <div className="ml-8 mr-1 flex items-center cursor-pointer" onClick={() => handleEventAction(event.uid, "interest")}>
-                  <img className="ml-1" src="/assets/group_add.svg" alt="interest" />
-                  <p className="mx-1" style={{ fontSize: '12px', fontFamily: 'Inter' }}>
+                  <p className="mx-1" style={{ fontSize: '13px', fontFamily: 'Arial' }}>
                     {event.isInterested ? "Interested" : "Interested?"}
                   </p>
                 </div>

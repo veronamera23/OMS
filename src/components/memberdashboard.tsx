@@ -11,6 +11,7 @@ import Calendar from "./calendar";
 const MemberDashboard: React.FC = () => {
   const [firstName, setFirstName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentDateTime, setCurrentDateTime] = useState<string>("");
 
   const handleLogout = async () => {
     try {
@@ -56,8 +57,23 @@ const MemberDashboard: React.FC = () => {
       }
     });
 
-    // Clean up the listener when the component unmounts
-    return () => unsubscribe();
+    const interval = setInterval(() => {
+      const current = new Date();
+      setCurrentDateTime(current.toLocaleString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })); // Update every minute, remove seconds
+    })
+
+    // Clean up the listener and interval when the component unmounts
+    return () => {
+      unsubscribe();
+      clearInterval(interval);
+    };
   }, []);
 
   if (loading) return <div>Loading...</div>; // Display loading state while fetching data
@@ -87,7 +103,7 @@ const MemberDashboard: React.FC = () => {
             <Calendar />
           </div>
           <div className="mx-32 my-5 text-black memberstats h-4 w-full max-w-xs bg-gray-300 p-4">
-            Current Date and Time
+            {currentDateTime} {/* Display current time without seconds */}
           </div>
           <div
           className="mx-1 text-black pending-tasks bg-white h-34 w-[600px] p-5 flex justify-start">

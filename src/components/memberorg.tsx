@@ -83,7 +83,7 @@ const MemberOrg: React.FC = () => {
                 Check out what's happening at "Organization Name"
             </p>
             <hr className="my-4 border-black" />
-            <OrgEventList />
+            <OrgEventList user={undefined} />
             <p
                 className="my-2 text-right hover:text-purple-700"
                 style={{ fontSize: "16px", fontFamily: "Arial" }}
