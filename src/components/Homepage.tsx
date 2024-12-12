@@ -42,16 +42,17 @@ import Link from 'next/link'
                   </div>
               </Link>
             </div>
-
+          
             <div className="relative lg:col-start-4 lg:row-start-4 lg:col-span-2 pt-8"> {/* card 6 */}
               <a href="#">
                 <div className=" grid lg:grid-cols-2 lg:grid-rows-2 rounded-3xl" style={{backgroundColor: 'rgba(135,54,234,1)'}}>
                   <div className="flex lg:col-start-2 lg:col-span-1 lg:row-span-1 pl-44 pb-10">
                     <img src="/assets/arrow.svg" alt="arrow" className="rounded-l-sm rounded-b-sm mt-2"style={{backgroundClip: 'none'}}/>
                   </div>
+                  <Link href="/guestviewevents">
                   <div className="relative lg:row-start-2 lg:col-span-2 rounded-3xl" style={{backgroundColor: 'rgba(135,54,234,1)'}}>
                     <p className="pl-5 pt-10"style={{fontSize: '32px', fontFamily :'Arial', color: 'white'}}>Explore More</p>
-                  </div>  
+                  </div>  </Link>
                 </div>
               </a>
             </div>

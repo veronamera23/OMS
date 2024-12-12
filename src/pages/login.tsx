@@ -27,7 +27,7 @@ function Login() {
       } else if (userData?.role === "organization") {
         router.push("/orgpage");
       } else {
-        router.push("/restricted");
+        router.push("/restrictedpage");
       }
 
       toast.success("User logged in successfully", { position: "top-center" });
