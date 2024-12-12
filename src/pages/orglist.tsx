@@ -19,7 +19,6 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 const Header: React.FC = () => {
   return (
-
     <div className="flex flex-col md:flex-col justify-between pb-4 border-b border-gray-200">
       <div className="py-2">
         <Link href="/memberpage" className="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
@@ -75,7 +74,7 @@ const SearchAndFilter: React.FC = () => {
         <DropdownMenu
           title="Application"
           options={["Accepted", "Ongoing", "Rejected"]}
-          links={["/membershipstatus"]}
+          links={["/membershipstatus"]} // Only "Rejected" will use this link
         />
       </div>
     </div>
@@ -101,8 +100,8 @@ const DropdownMenu: React.FC<{
         <div className="py-1">
           {options.map((option, index) => (
             <MenuItem key={option}>
-              {links && links.length > 0 ? (
-                <Link href={`${links[0]}=${option.toLowerCase()}`} passHref>
+              {option === "Rejected" && links ? (
+                <Link href={`${links[0]}?status=${option.toLowerCase()}`} passHref>
                   <button className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none">
                     {option}
                   </button>
@@ -119,7 +118,6 @@ const DropdownMenu: React.FC<{
     </Menu>
   );
 };
-
 
 const OrgList: React.FC = () => {
   const [organizations, setOrganizations] = useState<Array<{
