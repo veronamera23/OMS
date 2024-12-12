@@ -11,8 +11,6 @@ const MemberPage = () => {
   const [isMember, setIsMember] = useState(false);
   const router = useRouter();
 
-
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {

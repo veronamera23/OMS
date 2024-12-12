@@ -97,15 +97,18 @@ const MemberSidebar: React.FC = () => {
         ))}
 
         <hr className="my-4 border-gray-300" />
-          <a href="/memberaboutus" className="flex items-center px-6 py-3 text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition-colors">
+        <Link href="/memberaboutus">
+          <a className="flex items-center px-6 py-3 text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition-colors">
             <InfoIcon />
             <span className="ml-3 text-md font-medium">Information</span>
           </a>
-        <Link href="/"
-          className="flex items-center px-6 py-3 text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition-colors"
-        >
-          <SettingsIcon />
-          <span className="ml-3 text-md font-medium">Profile Settings</span>
+        </Link>
+
+        <Link href="/">
+          <a className="flex items-center px-6 py-3 text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition-colors">
+            <SettingsIcon />
+            <span className="ml-3 text-md font-medium">Profile Settings</span>
+          </a>
         </Link>
       </nav>
 
