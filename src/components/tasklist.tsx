@@ -98,7 +98,10 @@ const TaskList: React.FC = () => {
       </h1>
       <hr className="border-purple-700 border-1" />
       <div className="task-list flex flex-col gap-2">
-        {loading && <p className="text-gray-700">Loading tasks...</p>}
+        {loading && 
+                    <div className="flex justify-center items-center h-screen">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                  </div>}
         {error && <p className="text-gray-700">{error}</p>}
         {!loading && tasks.length === 0 && <p className="text-gray-700">No tasks available.</p>}
         {!loading && !error && tasks.map((task) => (

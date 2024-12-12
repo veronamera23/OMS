@@ -82,8 +82,13 @@ const OfficerTasks: React.FC<{ userId: string }> = ({ userId }) => {
     }
   }, [organizationId]); // Only re-fetch tasks when organizationId changes
 
-  // Display loading state while fetching data
-  if (loading) return <div>Loading tasks...</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   // Display error message if there was an issue fetching the tasks
   if (error) return <div className="error-message text-red-500">{error}</div>;

@@ -378,8 +378,8 @@ const EventsView: React.FC = () => {
         <SearchAndFilter />
         <div className="mt-6">
           {loading ? (
-            <div className="text-center text-gray-500 py-4">
-              Loading events...
+            <div className="flex justify-center items-center h-screen">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
             </div>
           ) : error ? (
             <div className="text-center text-red-500 py-4">{error}</div>

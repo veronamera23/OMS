@@ -3,18 +3,19 @@ import { auth, db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import MemberSidebar from "./membersidebar";
-import MemTaskList from "./memtasklist";
-import OrgEventList from "./orgeventlist";
-import Calendar from "./calendar";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Link from "next/link";
+import MemTaskList from "./memtasklist";
+import MemberEventList from "./membereventlist";
+import Calendar from "./calendar";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const MemberOrg: React.FC = () => {
   const [firstName, setFirstName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const currDate = new Date().toLocaleDateString();
-  const currTime = new Date().toLocaleTimeString();
 
+  const [currentDateTime, setCurrentDateTime] = useState<string>("");
+
+  // Handles user logout
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -24,21 +25,17 @@ const MemberOrg: React.FC = () => {
     }
   };
 
-  // Function to fetch user's first name from the 'members' collection
+  // Fetch user's first name from the Firestore 'members' collection
   const fetchUserData = async (userId: string) => {
     try {
-      // Fetch the user's data from the 'Users' collection
       const userDoc = await getDoc(doc(db, "Users", userId));
       const userData = userDoc.data();
 
-      // Ensure the user exists and has a memberId
       if (userData?.memberId) {
-        // Fetch the user details from the 'members' collection using memberId
         const memberDoc = await getDoc(doc(db, "members", userData.memberId));
         const memberData = memberDoc.data();
 
         if (memberData) {
-          // Set the first name from the 'members' collection
           setFirstName(memberData.firstName);
         }
       }
@@ -53,140 +50,119 @@ const MemberOrg: React.FC = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setLoading(true);
-        fetchUserData(user.uid); // Fetch user data when the user logs in
+        fetchUserData(user.uid);
       } else {
-        setLoading(false); // Handle user being logged out
+        setLoading(false);
       }
     });
 
-    // Clean up the listener when the component unmounts
+    const interval = setInterval(() => {
+      const current = new Date();
+      setCurrentDateTime(current.toLocaleString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })); // Update every minute, remove seconds
+    })
+
     return () => unsubscribe();
   }, []);
 
-  if (loading) return <div>Loading...</div>; // Display loading state while fetching data
-
-  const handleOrgListRedirect = () => {
-    window.location.href = "/orglist"; // Redirect to orglist.tsx
-  };
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div
       className="grid lg:grid-cols-3 bg-white"
       style={{ gridTemplateColumns: "20% 40% 40%" }}
     >
+      {/* Sidebar */}
       <div className="flex lg:col-start-1">
         <MemberSidebar />
       </div>
-      <div className="lg:col-start-2 mt-8">
+
+      {/* Main Content */}
+      <div className="lg:col-start-2 mt-4">
+        {/* Back to Dashboard Link */}
         <div className="py-2">
           <Link
             href="/memberpage"
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
+            className="flex items-center space-x-1 text-gray-600 hover:text-gray-800"
           >
             <ArrowBackIcon />
             <span>Back to Dashboard</span>
           </Link>
         </div>
+
+        {/* Welcome Message */}
         <div className="lg:col-start-2 ml-auto">
-            <div className="welcome-message ml-auto">
-                Welcome back, {firstName || "User"}! {/* Display first name */}
-            </div>
-            <p style={{ fontSize: "16px", fontFamily: "Arial" }}>
-                {" "}
-                Check out what's happening at "Organization Name"
-            </p>
-            <hr className="my-4 border-black" />
-            <OrgEventList user={undefined} />
-            <p
-                className="my-2 text-right hover:text-purple-700"
-                style={{ fontSize: "16px", fontFamily: "Arial" }}
-            >
-                {" "}
-                View More
-            </p>
-            <p className="pt-10" style={{ fontSize: "16px", fontFamily: "Arial" }}>
-                {" "}
-                What else would you like to do?
-            </p>
-            <div className="flex py-4 gap-4 w-min">
-                <Link href="/memberviewevents" >
-                    <button className="officer-action-buttons flex-grow">
-                        View My Events
-                    </button>
-                </Link>
-                <button 
-                    className="officer-action-buttons flex-grow"
-                    onClick={handleOrgListRedirect}>
-                    View Members
-                </button>
-            </div>
-        </div>
-        <p style={{ fontSize: "16px", fontFamily: "Arial" }}>
-          {" "}
-          Check out what's happening at "Organization Name"
-        </p>
-        <hr className="my-4 border-black" />
-        <OrgEventList />
-        <p
-          className="my-2 text-right hover:text-purple-700"
-          style={{ fontSize: "16px", fontFamily: "Arial" }}
-        >
-          {" "}
-          View More
-        </p>
-        <p className="pt-10" style={{ fontSize: "16px", fontFamily: "Arial" }}>
-          {" "}
-          What else would you like to do?
-        </p>
-        <div className="flex py-4 gap-4 w-min">
+          <div className="welcome-message ml-auto">
+            Welcome back, {firstName || "User"}!
+          </div>
+          <hr className="my-4 border-black" />
+          <p className="text-sm font-light">
+            Check out what's happening...
+          </p>
+          {/* Events Section */}
+          <MemberEventList />
           <Link href="/memberviewevents">
-            <button className="officer-action-buttons flex-grow">
-              View My Events
+          <p className="my-2 text-right hover:text-purple-700 text-sm font-light">
+            View More
+          </p></Link>
+
+          {/* Actions */}
+          <p className="pt-1 text-sm font-light">
+            What else would you like to do?
+          </p>
+          <div className="flex py-4 gap-4">
+            <Link href="/memberviewevents">
+              <button className="officer-action-buttons">View Events</button>
+            </Link>
+            <button
+              className="officer-action-buttons"
+              onClick={() => (window.location.href = "/orglist")}
+            >
+              View Members
             </button>
-          </Link>
-          <button
-            className="officer-action-buttons flex-grow"
-            onClick={handleOrgListRedirect}
-          >
-            View Members
-          </button>
+          </div>
         </div>
       </div>
+
+      {/* Right Sidebar */}
       <div className="lg:col-start-3 mt-8 ml-6">
+        {/* Logout Button */}
         <button
-          className="logout-button text-sm px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600 absolute right-[1.5rem] top-[2rem]"
+          className="logout-button text-sm px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600 absolute right-6 top-6"
           onClick={handleLogout}
         >
           Log Out
         </button>
-        <div
-          className="mt-16 rounded-lg shadow-lg h-auto bg-gray-100"
-          style={{ width: "90%", height: "55%" }}
-        >
-          <div className="mx-3 pt-7 h-auto max-w-lg">
-            <Calendar />
-          </div>
+
+        {/* Calendar */}
+        <div className="mx-4 mt-16 h-60 max-w-lg">
+          <Calendar />
         </div>
-        <div className="mt-4 text-black mb-8 mx-28 justify-center text-center flex h-4 w-full max-w-xs">
-          <p
-            className="flex mr-6"
-            style={{ fontSize: "22px", fontFamily: "Arial" }}
-          >
-            {currDate}
-          </p>
-          <p style={{ fontSize: "22px", fontFamily: "Arial" }}>{currTime}</p>
+
+        {/* Current Date and Time */}
+        <div className="mx-28 mt-56 text-black memberstats h-4 max-w-xs bg-gray-300 p-4 bg-white shadow-md">
+          {currentDateTime}
         </div>
-        <div
-          className=" text-black h-45 rounded-lg shadow-lg"
-          style={{ width: "90%" }}
-        >
+
+        {/* Pending Tasks */}
+        <div className="ml-0 text-black pending-tasks max-w-full p-5 flex justify-start">
           <MemTaskList />
         </div>
         <p
-          className="mx-16 my-2 text-right hover:text-purple-700"
-          style={{ fontSize: "16px", fontFamily: "Arial" }}
+          className="mx-16 my-2 text-right hover:text-purple-700 text-sm font-light"
         >
-          {" "}
           View More
         </p>
       </div>

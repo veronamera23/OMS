@@ -88,7 +88,7 @@ const MemberSidebar: React.FC = () => {
             className="flex items-center px-6 py-3 text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition-colors"
           >
             <img
-              src={org.photo || "/assets/OMSLOGO.png"} // Use org.photo for the organization's photo
+              src={org.photo || "/assets/default.jpg"} // Use org.photo for the organization's photo
               alt={org.name}
               className="h-8 w-8 rounded-full" // Circular image style
             />

@@ -1,111 +1,171 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where, setDoc, serverTimestamp } from "firebase/firestore";
+import { auth } from "../firebaseConfig"; // Assuming you use Firebase Auth
 import OfficerSidebar from "../components/officersidebar";
 
-const ViewOfficersOfficerView: React.FC = () => {
-  const [officers, setOfficers] = useState<{
-    [key: string]: { name: string; course: string; yearLevel: string };
-  }>({});
+const OfficerEditForm: React.FC = () => {
   const [loading, setLoading] = useState(true);
+  const [organizationName, setOrganizationName] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [officerPositions, setOfficerPositions] = useState({
+    president: '',
+    vicePresident: '',
+    secretary: '',
+    treasurer: '',
+    auditor: ''
+  });
+  const [organizationId, setOrganizationId] = useState<string>("");
 
-  const fetchOfficers = async () => {
+  // Fetch the current user and their organization details
+  useEffect(() => {
+    const getUser = async () => {
+      const currentUser = auth.currentUser;
+      if (currentUser && currentUser.uid) {
+        try {
+          // Get user document directly using uid
+          const userDoc = await getDoc(doc(db, "Users", currentUser.uid));
+          
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const orgId = userData.organizationId;
+            setOrganizationId(orgId);
+
+            // Get organization name
+            const orgDoc = await getDoc(doc(db, "Organizations", orgId));
+            if (orgDoc.exists()) {
+              setOrganizationName(orgDoc.data().name);
+            }
+
+            // Get existing officers data if any
+            const officersDoc = await getDoc(doc(db, "officers", orgId));
+            if (officersDoc.exists()) {
+              const officersData = officersDoc.data();
+              setOfficerPositions({
+                president: officersData.president || '',
+                vicePresident: officersData.vicePresident || '',
+                secretary: officersData.secretary || '',
+                treasurer: officersData.treasurer || '',
+                auditor: officersData.auditor || ''
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Error fetching data:", err);
+          setError("Failed to load data");
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setError("You must be logged in to view this page");
+        setLoading(false);
+      }
+    };
+
+    getUser();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
     try {
-      const organizationId = localStorage.getItem("organizationId") || "";
-      const officersRef = collection(db, "Users");
-      const q = query(
-        officersRef,
-        where("organizationId", "==", organizationId),
-        where("role", "==", "officer")
-      );
-      const querySnapshot = await getDocs(q);
+      const currentUser = auth.currentUser;
+      if (!currentUser?.email) {
+        throw new Error("No user logged in");
+      }
 
-      const officersData: {
-        [key: string]: { name: string; course: string; yearLevel: string };
-      } = {};
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        officersData[data.position] = {
-          name: data.fullName,
-          course: data.course || "Unknown Course", 
-          yearLevel: data.yearLevel || "Unknown Year", 
-        };
-      });
+      // Get user's organization ID
+      const usersRef = collection(db, "Users");
+      const userQuery = query(usersRef, where("email", "==", currentUser.email));
+      const userDocs = await getDocs(userQuery);
 
-      setOfficers(officersData);
-    } catch (error) {
-      console.error("Error fetching officers:", error);
+      if (userDocs.empty) {
+        throw new Error("User not found");
+      }
+
+      const organizationId = userDocs.docs[0].data().organizationId;
+      
+      // Prepare the data
+      const officerData = {
+        president: officerPositions.president,
+        vicePresident: officerPositions.vicePresident,
+        secretary: officerPositions.secretary,
+        treasurer: officerPositions.treasurer,
+        auditor: officerPositions.auditor,
+        organizationId: organizationId,
+        updatedAt: serverTimestamp()
+      };
+
+      // Save to Firestore
+      const officerRef = doc(db, "officers", organizationId);
+      await setDoc(officerRef, officerData);
+
+      console.log("Officers data saved successfully:", officerData);
+      alert("Officers updated successfully!");
+    } catch (err) {
+      console.error("Error saving officers:", err);
+      setError(err instanceof Error ? err.message : "Failed to update officers");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchOfficers();
-  }, []);
-
-  if (loading) return <div>Loading...</div>;
-
-  const generateRandomGradient = () => {
-    const gradients = [
-      // Blue first
-      `linear-gradient(to top, #60A5FA, #8B5CF6)`,
-      `linear-gradient(to top right, #60A5FA, #4F46E5)`,
-      `linear-gradient(to right, #60A5FA, #6D28D9)`,
-      `linear-gradient(to bottom right, #60A5FA, #4338CA)`,
-      `linear-gradient(to bottom, #60A5FA, #7C3AED)`,
-      `linear-gradient(to bottom left, #60A5FA, #3730A3)`,
-      `linear-gradient(to left, #818CF8, #8B5CF6)`,
-      `linear-gradient(to top left, #818CF8, #4F46E5)`,
-
-      // Purple first
-      `linear-gradient(to top, #8B5CF6, #60A5FA)`,
-      `linear-gradient(to top right, #4F46E5, #60A5FA)`,
-      `linear-gradient(to right, #6D28D9, #60A5FA)`,
-      `linear-gradient(to bottom right, #4338CA, #60A5FA)`,
-      `linear-gradient(to bottom, #7C3AED, #60A5FA)`,
-      `linear-gradient(to bottom left, #3730A3, #60A5FA)`,
-      `linear-gradient(to left, #8B5CF6, #818CF8)`,
-      `linear-gradient(to top left, #4F46E5, #818CF8)`,
-    ];
-
-    const randomIndex = Math.floor(Math.random() * gradients.length);
-    return gradients[randomIndex];
-  };
-
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
   return (
-    <div className="flex">
+    <div className="flex bg-white">
       <OfficerSidebar />
       <main className="main-content flex-grow p-6">
         <div>
-          <h1 className="text-3xl font-bold mb-2 text-purple-500">
-            View Officers of
+          <h1 className="text-3xl font-bold mb-2 text-black">
+            Edit Officers of {organizationName}
           </h1>
-          <hr className="border-t-2 border-purple-500 mb-6" />
+          <hr className="border-t-2 border-gray mb-6" />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Object.entries(officers).map(([position, { name, course, yearLevel }]) => (
-            <div
-              key={position}
-              className={`p-4 rounded shadow transition-all duration-300 ease-linear hover:scale-105 group`}
-              style={{ background: generateRandomGradient() }}
-            >
-              <div className="officer-card relative overflow-hidden h-fit">
-                <div className="mt-2 text-center">
-                  <h2 className="text-lg font-semibold text-white">{name}</h2>
-                  <p className="text-gray-200">{position}</p>
-                </div>
-                <div className="absolute bottom-0 left-0 w-full bg-black/50 text-gray-200 text-center py-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {course} - {yearLevel}
-                </div>
-              </div>
+        {error && <div className="text-red-500 mb-4">{error}</div>}
+
+        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
+          {Object.entries({
+            'President': 'president',
+            'Vice President': 'vicePresident',
+            'Secretary': 'secretary',
+            'Treasurer': 'treasurer',
+            'Auditor': 'auditor'
+          }).map(([label, key]) => (
+            <div key={key} className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                {label}:
+              </label>
+              <input
+                type="text"
+                value={officerPositions[key as keyof typeof officerPositions]}
+                onChange={(e) => setOfficerPositions(prev => ({
+                  ...prev,
+                  [key]: e.target.value
+                }))}
+                className="w-full p-2 border rounded-md"
+                placeholder={`Enter ${label}'s Name`}
+              />
             </div>
           ))}
-        </div>
+          
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+          >
+            Save All Changes
+          </button>
+        </form>
       </main>
     </div>
   );
 };
 
-export default ViewOfficersOfficerView;
+export default OfficerEditForm;

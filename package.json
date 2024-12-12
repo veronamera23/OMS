@@ -57,6 +57,7 @@
     ]
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^15.1.0",
     "@types/next": "^8.0.7",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",

@@ -79,7 +79,7 @@ const MemberEventList: React.FC = () => {
       // Sort events by the number of likes (length of the likedBy array)
       const sortedEvents = eventsList.sort((a, b) => (b.likedBy?.length || 0) - (a.likedBy?.length || 0));
   
-      const topEvents = sortedEvents.slice(0, 4);
+      const topEvents = sortedEvents.slice(0, 5);
   
       setEvents(topEvents);
     } catch (err) {
@@ -143,17 +143,23 @@ const MemberEventList: React.FC = () => {
     return text && text.length > 100 ? text.substring(0, 100) + "..." : text || "";
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
   if (error) return <div>{error}</div>;
 
   return (
     <div>
-      <div className="grid gap-2 p-1 m-auto text-black h-auto w-full">
+      <div className="grid gap-2 p-1 m-auto text-black  h-auto w-full">
         {events.map((event) => (
-          <div key={event.uid} className="p-2 mb-6 flex flex-col lg:flex-row items-center transition-shadow  shadow-md duration-200 hover:shadow-lg hover:shadow-gray-300">
+          <div key={event.uid} className="p-2 mb-4 flex flex-col bg-gray-100 lg:flex-row items-center transition-shadow  shadow-md duration-200 hover:shadow-lg hover:shadow-gray-300">
             <div className="mb-4 w-60 h-20 rounded bg-gray-200">
               <img
-                src={Array.isArray(event.eventImages) && event.eventImages.length > 0 ? event.eventImages[0] : "/assets/komsai.png"}
+                src={Array.isArray(event.eventImages) && event.eventImages.length > 0 ? event.eventImages[0] : "/assets/default-img.png"}
                 alt={event.eventName}
                 className="w-full h-full object-cover rounded"
               />

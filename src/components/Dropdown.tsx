@@ -1,7 +1,7 @@
 'use client'
 
-import settings from './settings.svg'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
+import Link from 'next/link';
 
 
 export default function Dropdown() {
@@ -17,6 +17,7 @@ export default function Dropdown() {
         className="absolute w-full justify-center px-3 py-3 mt-2 rounded-full bg-black"
       >
         <div className="py-1">
+          <Link href="/">
           <MenuItem>
             <a
               href="#"
@@ -24,7 +25,7 @@ export default function Dropdown() {
             >
               <img alt="" src="/assets/home.svg"className="h-8 w-auto"/>
             </a>
-          </MenuItem>
+          </MenuItem></Link>
           <MenuItem>
             <a
               href="#"

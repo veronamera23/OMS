@@ -111,12 +111,13 @@ const OfficerDashboard: React.FC = () => {
     return () => unsubscribe();
   }, []); 
 
-  if (loading) return <div style={{
-        display: 'flex',
-        justifyContent: 'center',  
-        alignItems: 'center',     
-        height: '100vh',        
-        fontSize: '1.rem',   }}>Loading...</div>; 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
   
     // Calendar Logic
     const date = new Date();
@@ -168,7 +169,7 @@ const OfficerDashboard: React.FC = () => {
           <button className="officer-action-buttons flex-grow" onClick={handleAddEventClick}>
             Add Event
           </button>
-          <Link href="/viewofficersofficerview">
+          <Link href="/viewOfficers">
           <button className="officer-action-buttons flex-grow">View Officers</button>
           </Link>
           <Link href="/userevents">
@@ -184,9 +185,9 @@ const OfficerDashboard: React.FC = () => {
         {isAddEventOpen && <OfficerAddEvent close={handleCloseEventForm} />}
 
         {/* Organization Overview */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="org-overview flex flex-col gap-4">
-            <div className="org-logo-container flex items-center gap-6 bg-transparent">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+          <div className="org-overview flex flex-col gap-0">
+            <div className="org-logo-container flex items-center gap-3 bg-transparent">
               <img
                 src={organizationData?.organizationLogo ? organizationData.organizationLogo : "/assets/default-logo.png"}
                 alt="Organization Logo"
@@ -216,7 +217,7 @@ const OfficerDashboard: React.FC = () => {
           </div>
           <div className="text-black relative flex flex-col w-full justify-end">
             <div className="-mt-6 text-black calendar h-96 bg-white self-end">
-              <div className="calendar-container -mr-4 p-6 rounded-lg shadow-md bg-gray-100 self-end transition-shadow duration-200 hover:shadow-lg hover:shadow-purple-300">
+              <div className="calendar-container -mr-4 p-6 rounded-lg shadow-md bg-white self-end transition-shadow duration-200 hover:shadow-lg hover:shadow-purple-300">
                 <div className="calendar-header text-purple-700 font-bold">
                   <h3 className="text-lg">{monthNames[currentMonth]} {currentYear}</h3>
                 </div>

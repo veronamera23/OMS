@@ -77,7 +77,13 @@ const MemberDashboard: React.FC = () => {
     };
   }, []);
 
-  if (loading) return <div>Loading...</div>; // Display loading state while fetching data
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   const handleOrgListRedirect = () => {
     window.location.href = "/orglist"; // Redirect to orglist.tsx
@@ -100,23 +106,23 @@ const MemberDashboard: React.FC = () => {
             How are we doing today?
           </p>
           <hr className="my-4 border-black" />
-          <div className="text-black rounded-lg shadow-lg bg-gray-100 relative">
+          <div className="text-black rounded-lg shadow-lg bg-white relative">
             <div className="ml-6 py-6" style={{width: '90%'}}>
               <Calendar />
             </div>
           </div>
 
-          <div className="mx-32 my-5 text-black memberstats h-4 w-full max-w-xs bg-gray-300 p-4">
+          <div className="mx-32 my-5 text-black memberstats h-4 w-full max-w-xs bg-white shadow-md p-4">
             {currentDateTime} {/* Display current time without seconds */}
 
           </div>
           <div
-          className=" text-black bg-white h-34 w-full rounded-lg shadow-lg">
+          className=" text-black bg-gray-100 h-34 w-full rounded-lg shadow-lg">
           <MemTaskList />
         </div>
           <p
             className="my-2 text-right hover:text-purple-700"
-            style={{ fontSize: "16px", fontFamily: "Arial" }}
+            style={{ fontSize: "13px", fontFamily: "Arial" }}
           >
             {" "}
             View More
@@ -148,18 +154,18 @@ const MemberDashboard: React.FC = () => {
             style={{ fontSize: "16px", fontFamily: "Arial" }}
           >
             {" "}
-            Check out what's happening...
+            Check out what's trending...
           </p>
           <div style={{width: '90%'}}>
             <MemberEventList/>
           </div>
-          <Link href="/memberviewevents" ><p
-            className="ml-5 my-1 text-right hover:text-purple-700"
-            style={{width: '90%', fontSize: "16px", fontFamily: "Arial" }}
+          {/* <Link href="/memberviewevents" ><p
+            className="ml-2 my-1 text-right hover:text-purple-700"
+            style={{width: '96%', fontSize: "13px", fontFamily: "Arial" }}
           >
             {" "}
             View More
-          </p></Link>
+          </p></Link> */}
         </div>
       </div>
   );

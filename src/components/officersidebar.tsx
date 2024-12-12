@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import GroupIcon from "@mui/icons-material/Group";
 import EventIcon from "@mui/icons-material/Event";
@@ -6,8 +6,11 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import InfoIcon from "@mui/icons-material/Info";
 import SettingsIcon from "@mui/icons-material/Settings";
 import Link from "next/link";
+import ProfileSettings from './profilesetting';
 
 const OfficerSidebar: React.FC = () => {
+  const [showProfileSettings, setShowProfileSettings] = useState(false);
+
   return (
     <aside className="w-64 h-screen bg-gray-100 shadow-lg flex flex-col">
       {/* Sidebar Title with Logo */}
@@ -61,19 +64,23 @@ const OfficerSidebar: React.FC = () => {
           <span className="ml-3 text-md font-medium">Information</span>
         </a>
 
-        <a
-          href="#"
-          className="flex items-center px-6 py-3 text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition-colors"
+        <button
+          onClick={() => setShowProfileSettings(true)}
+          className="flex items-center px-6 py-3 text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition-colors w-full"
         >
           <SettingsIcon />
           <span className="ml-3 text-md font-medium">Profile Settings</span>
-        </a>
+        </button>
       </nav>
 
       {/* Footer */}
       <div className="p-4 text-sm text-gray-500 border-t border-gray-300">
         © 2024 OMS Platform
       </div>
+
+      {showProfileSettings && (
+        <ProfileSettings close={() => setShowProfileSettings(false)} />
+      )}
     </aside>
   );
 };

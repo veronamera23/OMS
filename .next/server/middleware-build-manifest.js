@@ -25,15 +25,10 @@ self.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/memberspageofficerview": [
+    "/login": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/memberspageofficerview.js"
-    ],
-    "/membervieworg": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/membervieworg.js"
+      "static/chunks/pages/login.js"
     ],
     "/orgpage": [
       "static/chunks/webpack.js",
