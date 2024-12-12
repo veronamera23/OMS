@@ -3,15 +3,13 @@ import MemberSidebar from "../components/membersidebar";
 
 const AboutUs = () => {
   return (
-    <div className="flex"> 
-      <div className="sticky left-0 top-0 min-h-screen overflow-y-auto bg-white shadow-md">
-
-      {/* Sidebar */}
+    <div className="flex bg-white"> 
+    <div className="flex min-h-screen ">
       <MemberSidebar /> 
       </div>
 
       {/* Main content */}
-      <main className="main-content flex-grow p-6 bg-white">
+      <main className="main-content flex-grow p-6 ">
         <div className="flex flex-col items-center bg-gray-100 min-h-screen py-10 px-4">
           {/* Logo Section */}
           <div className="flex flex-col lg:flex-row items-center justify-center gap-8 bg-white p-8 rounded-lg shadow-md w-full max-w-6xl mb-12">
