@@ -37,7 +37,7 @@ const ViewOfficers: React.FC = () => {
             }
 
             // Fetch officers data
-            const officerDoc = await getDoc(doc(db, "Officers", orgId));
+            const officerDoc = await getDoc(doc(db, "officers", orgId));
             if (officerDoc.exists()) {
               const data = officerDoc.data();
               setOfficers({
