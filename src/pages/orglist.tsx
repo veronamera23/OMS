@@ -75,7 +75,7 @@ const SearchAndFilter: React.FC = () => {
         <DropdownMenu
           title="Application"
           options={["Accepted", "Ongoing", "Rejected"]}
-          links={["/membershipstatus"]}
+          links={["/membershipstatus?status"]}
         />
       </div>
     </div>
@@ -101,8 +101,8 @@ const DropdownMenu: React.FC<{
         <div className="py-1">
           {options.map((option, index) => (
             <MenuItem key={option}>
-              {links && links[index] ? (
-                <Link href={links[index]}>
+              {links && links.length > 0 ? (
+                <Link href={`${links[0]}=${option.toLowerCase()}`} passHref>
                   <button className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none">
                     {option}
                   </button>
@@ -119,6 +119,7 @@ const DropdownMenu: React.FC<{
     </Menu>
   );
 };
+
 
 const OrgList: React.FC = () => {
   const [organizations, setOrganizations] = useState<Array<{
