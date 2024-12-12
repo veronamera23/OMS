@@ -75,7 +75,7 @@ const SearchAndFilter: React.FC = () => {
         <DropdownMenu
           title="Application"
           options={["Accepted", "Ongoing", "Rejected"]}
-          links={["/membershipstatus?status"]}
+          links={["/membershipstatus"]}
         />
       </div>
     </div>
