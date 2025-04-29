@@ -1,46 +1,34 @@
-# Getting Started with Create React App
+# OMS (Organization Management System)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Christine Jean Pagunsan — Frontend Developer & Documentation Lead**  
 
-## Available Scripts
+OMS is a web-based platform developed as part of CMSC 128 (Software Engineering) at the University of the Philippines Visayas. It serves as an internal management tool for student organizations, addressing the lack of a centralized digital platform to support student involvement and streamline organizational operations.
 
-In the project directory, you can run:
+## Project Overview
 
-### `npm start`
+OMS provides organization members and officers with dashboards, event feeds, and tools for tracking participation, events, finances, and organizational responsibilities.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+_**Note:** OMS is successfully deployed, but access is currently restricted to the development team. This project was completed as a requirement for CMSC 128 and is not publicly available._
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Key Features
 
-### `npm test`
+- **Homepage** with login and event highlights  
+- **Upcoming Events Feed** with interactive event cards  
+- **Organization Dashboards** for members and officers  
+- **Customization Options** for UI themes and preferences  
+- **Member Database Integration**  
+- **Admin tools** for posting updates and tracking participation  
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Team Roles & Contribution
 
-### `npm run build`
+- **Frontend Development:** Developed responsive UI components, layouts, and navigation structure using TypeScript and Tailwind CSS.  
+- **Documentation:** Co-authored system documentation and maintained feature tracking for stakeholder communication.  
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Tech Stack
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **Frontend:** TypeScript, Tailwind CSS  
+- **Backend:** Firebase (Authentication & Realtime Database)  
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
